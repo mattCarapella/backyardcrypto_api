@@ -2,7 +2,9 @@
   class QuestionsController < ApiController
     before_action :find_coin#, except: [:editor_images, :geteditor_images]
     before_action :find_ques_num, only: [:index]
-    before_action :find_user
+    
+    # before_action :find_user
+    
     # before_action :ensure_url_params, only:[:new]
     # before_action :find_top_picture, only: [:show]
     # skip_before_action :verify_authenticity_token, :only => [:editor_images]
@@ -69,12 +71,12 @@
    #  end
 
     def new
-      @question = current_user.questions.build
+      #@question = current_user.questions.build
+      @question = Question.new
     end
 
     def create
       #@question = current_user.questions.build(question_params)
-      
       @question = Question.new(question_params)
       @question.coin = @coin
       if @question.save

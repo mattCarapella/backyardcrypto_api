@@ -1,5 +1,5 @@
 class Link < ApplicationRecord
-	belongs_to :user
+	# belongs_to :user
 	belongs_to :coin
 	#validates :url, :format => URI::regexp(%w(http https))
 	#validates :websitename, presence: true

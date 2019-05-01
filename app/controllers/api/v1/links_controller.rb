@@ -1,11 +1,11 @@
 module Api::V1 
   class LinksController < ApiController
     before_action :set_coin
-    before_action :set_user
-    before_action :set_links
-    before_action :partition_links
+    # before_action :set_user
+    before_action :set_links, only: :index
+    # before_action :partition_links
   	# before_action :authenticate_user!
-  	load_and_authorize_resource
+  	# load_and_authorize_resource
 
     def index
       @accepted_links = Link.where("coin_id=? AND accepted=?", @coin.id, true).order("created_at DESC")
@@ -19,13 +19,13 @@ module Api::V1
 
   	def create
       params[:link][:accepted] = false
-  	  @link = current_user.links.build(link_params)
-  	  @link.coin = @coin
+  	  #@link = current_user.links.build(link_params)
+  	  @link = Link.new(link_params)
+      @link.coin = @coin
   	  if @link.save
-  	  	# flash[:notice] = "Your submission has been accepted and will be reviewed by a moderator."
-  	    # redirect_to coin_path(@coin)
+  	  	render json: @link, status: :created
   	  else
-  	    render 'new'
+  	    render json: @link.errors, status: :unprocessable_entity
       end
   	end
 
@@ -95,7 +95,7 @@ module Api::V1
       end
       
       def link_params
-        params.require(:link).permit(:url, :websitename, :accepted,:link_type, :exchange, :description)
+        params.require(:link).permit(:url, :websitename, :accepted, :link_type, :exchange, :description)
       end
 
       # def find_link
