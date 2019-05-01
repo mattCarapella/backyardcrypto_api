@@ -2,11 +2,11 @@ module Api::V1
   class EventsController < ApiController
     before_action :set_coin
     before_action :set_event, only: [:show, :update, :destroy]
-    #before_action :authenticate_user!, except: [:calendar, :index]
-    load_and_authorize_resource
+    # before_action :authenticate_user!, except: [:calendar, :index]
+    # load_and_authorize_resource
 
     def index
-  		#@events = Event.where(coin_id: @coin.id).order("created_at DESC")
+  		# @events = Event.where(coin_id: @coin.id).order("created_at DESC")
       @events = @coin.events.order(:start_time)
       
       @events.each {
@@ -55,17 +55,16 @@ module Api::V1
 
     def update
       if @event.update(event_params)
-        #redirect_to coin_event_path(@coin, @event.id)
+        render json: @event, status: :updated
         @updated = true
       else
-        #redirect_to 'edit'
+        render json: @event.errors, status: :unprocessable_entity
         @updated = false
       end
     end
 
     def destroy
       @event.destroy
-      redirect_to coin_events_path(@coin.id)
     end
 
     def getupvotes
@@ -97,7 +96,6 @@ module Api::V1
       event.pending = false
       event.rejected = false
       event.save
-      #redirect_to request.referrer
     end
 
     def deactivate
@@ -107,7 +105,6 @@ module Api::V1
       event.pending = false
       event.rejected = true
       event.save
-      #redirect_to request.referrer
     end
 
 

@@ -1,15 +1,13 @@
  module Api::V1  
   class QuestionsController < ApiController
     before_action :find_coin#, except: [:editor_images, :geteditor_images]
-    before_action :find_ques_num, only: [:index]
-    
+    before_action :find_ques_num, only: [:index]  
     # before_action :find_user
-    
     # before_action :ensure_url_params, only:[:new]
     # before_action :find_top_picture, only: [:show]
     # skip_before_action :verify_authenticity_token, :only => [:editor_images]
     # before_action :authenticate_user!, except: :show
-    load_and_authorize_resource
+    # load_and_authorize_resource
 
     def index
       @sort_by = params[:sort_by] ? params[:sort_by] : 'approval'
@@ -177,12 +175,10 @@
           question.accepted = true
           question.pending = false
           question.rejected = false
-          question.save
-          #redirect_to request.referrer
+          question.save!
         end
       #else
         #flash[:notice] = "Sorry. There can only be one approved item."
-        #redirect_to request.referrer
       end
     end
 
@@ -197,16 +193,6 @@
       question.save
       #redirect_to request.referrer
     end
-
-   #  def reject
-   #    authorize! :update, @question
-   #    question = Question.find(params[:id])
-   #    question.rejected = true
-   #    question.accepted = false
-   #    question.pending = false
-   #    question.save
-   #    redirect_to request.referrer
-   #  end
 
    #  def upvote
    #    @question = Question.find(params[:id] )

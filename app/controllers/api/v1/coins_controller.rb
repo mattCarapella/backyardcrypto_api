@@ -19,9 +19,10 @@ module Api::V1
     # end
 
     def index
-      @coins = Coin.all.search(params[:currency_name])
-      populate_coin_data
-      @coins = @coins.sort_by(&:market_cap).reverse
+      @coins = Coin.active_coins
+      # @coins = Coin.all.search(params[:currency_name])
+      populate_coin_data if @coins.exists?
+      #@coins = @coins.sort_by(&:market_cap).reverse
     end
 
     def pending
@@ -108,32 +109,37 @@ module Api::V1
     end
 
     def edit   
-      # if params[:q].present?
-      #   @question = Question.find_by_id(params[:q])
-      #   @num = @question.ques_num
+      if params[:q].present?
+        @question = Question.find_by_id(params[:q])
+        @num = @question.ques_num
 
-      #   if @question.present?
-      #     authorize! :update, @coin
-      #   else
-      #     render file: "#{Rails.root}/public/404", status: :not_found
-      #   end
-      # else
-      #   authorize! :update, @coin
-      # end
+        if @question.present?
+          authorize! :update, @coin
+        else
+          render file: "#{Rails.root}/public/404", status: :not_found
+        end
+      else
+        authorize! :update, @coin
+      end
     end
 
     def update
-      mode = true
-      mode = Coin.check_moderator_email(params[:coin][:moderator_email]) if params[:coin][:moderator_email].present?
-      if mode
-        @coin.moderator_id = User.find_by_email(params[:coin][:moderator_email]).id if params[:coin][:moderator_email].present?
-        if @coin.save! && @coin.update_attributes(coin_params)
-          #redirect_to coin_path(@coin)
-          render json: @coin
-        else
-          render 'edit'
-        end
+      if @coin.save! && @coin.update_attributes(coin_params)
+        render json: @coin
+      else
+        render json: @coin.errors, status: :unprocessable_entity
       end
+
+      # mode = true
+      # mode = Coin.check_moderator_email(params[:coin][:moderator_email]) if params[:coin][:moderator_email].present?      
+      #   @coin.moderator_id = User.find_by_email(params[:coin][:moderator_email]).id if params[:coin][:moderator_email].present?
+      #   if @coin.save! && @coin.update_attributes(coin_params)
+      #     #redirect_to coin_path(@coin)
+      #     render json: @coin
+      #   else
+      #     render 'edit'
+      #   end
+      # end
     end
 
     def destroy
@@ -159,7 +165,7 @@ module Api::V1
       # coin.save
       #redirect_to coin_path(coin)
     end
-    
+
     private
 
       def coin_params
@@ -225,6 +231,20 @@ module Api::V1
             byc_coin.change_24    = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']
             byc_coin.market_cap   = 0 if byc_coin.market_cap == nil            
           end
+        else 
+          @data.each do |cryptocompare_coin|
+            if @coins
+              byc_coin = @coins.select { |x| x.currency_abbrev == cryptocompare_coin[0] }.first
+            else
+              byc_coin = @coin
+            end
+            byc_coin.price        = 0
+            byc_coin.market_cap   = 0
+            byc_coin.supply_24    = 0
+            byc_coin.volume_24    = 0
+            byc_coin.change_24    = 0
+            byc_coin.market_cap   = 0 if byc_coin.market_cap == nil            
+          end        
         end
       end
 

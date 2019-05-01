@@ -1,13 +1,10 @@
 module Api::V1 	
 	class GenresController < ApiController
 
-		before_action :find_genre, only: [:show, :edit, :update, :destroy ]
+		before_action :find_genre, only: [:show, :destroy ]
 
 		def index
 			@genres = Genre.all.each_slice(4).to_a
-		end
-
-		def new
 		end
 
 		def show
@@ -20,27 +17,23 @@ module Api::V1
 			end
 		end
 
-		def new
-			@genre = Genre.new
-		end
+		# def new
+		# 	@genre = Genre.new
+		# end
 
-		def create
-			@genre = Genre.new(genre_params)
-			if @genre.save
-		    redirect_to genres_path
-		  else
-		    render 'new'
-		  end
-		end
+		# def create
+		# 	@genre = Genre.new(genre_params)
+		# 	if @genre.save
+		#     redirect_to genres_path
+		#   else
+		#     render 'new'
+		#   end
+		# end
 
-		def update
-		end
-
-		def destroy
-			authorize! :destroy, @genre
-			@genre.destroy
-			redirect_to genres_path
-		end
+		# def destroy
+		# 	authorize! :destroy, @genre
+		# 	@genre.destroy
+		# end
 
 		private
 
