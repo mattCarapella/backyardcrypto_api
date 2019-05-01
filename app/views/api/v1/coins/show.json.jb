@@ -1,0 +1,172 @@
+json = {	
+
+	current_user: @current_user,
+	id: @coin.id,
+	currency_name: @coin.currency_name,
+	link_name: @coin.link_name,
+	slug: @coin.slug, 
+	currency_abbrev: @coin.currency_abbrev,
+	genre_id: @coin.genre_id, 
+	user_id: @coin.user_id,
+	moderator_id: @coin.moderator_id,
+	created_at: @coin.created_at,
+	updated_at: @coin.updated_at,
+	#permalink: @coin.permalink,
+	genre: @coin.genre,
+	#coinmarket_id: @coin.coinmarket_id,
+	#rejected: @coin.rejected,
+	#pending: @coin.pending, 
+	#accepted: @coin.accepted,
+	#accepted_at: @coin.accepted_at,
+	
+	#===================== BASIC INFO =====================
+	volume_usd: @coin.volume_usd,
+	volume_btc: @coin.volume_btc,
+	founder: @coin.founder,
+	country_of_origin: @coin.country_of_origin,
+	working_product: @coin.working_product,
+	mineable: @coin.mineable,
+	price: @coin.price,
+	supply: @coin.supply_24,
+	volume_usd: @coin.volume_24,
+	change: @coin.change_24,
+	market_cap: @coin.market_cap,
+	supply_24hr: @coin.supply_24,
+	volume_24hr: @coin.volume_24,
+	change_24hr: @coin.change_24,
+	date_of_ico: @coin.date_of_ico,
+	money_raised_in_ico: @coin.money_raised_in_ico,
+	end_of_ico: @coin.end_of_ico,
+
+	#===================== PENDING COUNT INFO FOR ADMIN / ARCHIVE BUTTONS =====================
+	pending_brief_overview_count: @pending_brief_overview_count,
+	pending_history_count: @pending_history_count,
+	pending_govmodel_count: @pending_govmodel_count,
+	pending_busmodel_count:	@pending_busmodel_count,
+	pending_comoutline_count: @pending_comoutline_count,
+	pending_term_count: @pending_term_count,
+	pending_kp_count: @pending_kp_count,
+
+	picture: @coin.picture,
+	submitted_picture: @submitted_picture,
+	community_posts: @community_posts,
+}
+
+
+#json[:overview] = @general_accepted.map do |question|
+#	{
+#		id: question.id,
+#		ques_num: question.ques_num,
+#	  content: question.content,
+#	  user_id: question.user_id,
+#	  upvotes: question.upvotes,
+#	  downvotes: question.downvotes,
+#	  approval_rating: question.approval_rating,
+#	}
+#end
+
+json[:overview] = {
+	general_accepted: @general_accepted,
+}
+
+#json[:indepth_analysis] = @open_topic_accepted.map do |question|
+#	{
+#		id: question.id,
+#		ques_num: question.ques_num,
+#		open_topic: question.open_topic,
+#	  content: question.content,
+#	  user_id: question.user_id,
+#	  upvotes: question.upvotes,
+#	  downvotes: question.downvotes,
+#	  approval_rating: question.approval_rating,
+#	}
+#end
+
+json[:indepth_analysis] = {
+	open_topic_accepted: @open_topic_accepted,
+}
+
+json[:terms] = @accepted_terms.map do |term|
+	{
+		id: term.id,
+		title: term.title,
+		caption: term.caption,
+		content: term.content,
+		user_id: term.user_id,
+	}
+	
+end
+
+json[:key_players] = @accepted_key_players.map do |kp|
+	{
+		id: kp.id,
+		title: kp.title,
+		caption: kp.caption,
+		content: kp.content,
+		user_id: kp.user_id,
+	}
+	
+end
+
+json[:links] = {
+	pending_link_count: @pending_link_count,
+	whitepaper: @coin.whitepaper,
+	website: @coin.website,
+	reddit: @coin.reddit,
+	slack: @coin.slack,
+	discord: @coin.discord,
+	app: @coin.app,
+	github: @coin.github,
+	tradingview: @coin.tradingview,
+	twitter: @coin.twitter ,
+	bitcointalk: @coin.bitcointalk,
+	facebook: @coin.facebook,
+	stackexchange: @coin.stackexchange,
+	youtube: @coin.youtube,
+	coinmarketcap: @coin.coinmarketcap,
+	gitter: @coin.gitter,
+	blockexplorer: @coin.blockexplorer,
+	bitfinex: @coin.bitfinex,
+	bithumb: @coin.bithumb,
+	bitflyer: @coin.bitflyer,
+	hitbtc: @coin.hitbtc ,
+	poloniex: @coin.poloniex,
+	bitstamp: @coin.bitstamp,
+	bittrex: @coin.bittrex,
+	gdax: @coin.gdax,
+	gemini: @coin.gemini, 
+	btcc: @coin.btcc,
+	kraken: @coin.kraken,
+	korbit: @coin.korbit,
+	binance: @coin.binance,
+	yorbit: @coin.yorbit,
+	okcoin: @coin.okcoin,
+	weibo: @coin.weibo,	
+}
+
+json[:exchanges] = @coin_exchanges.map do |link|
+	{
+		id: link.id,
+		websitename: link.websitename,
+		url: link.url,
+		user_id: link.user_id,
+		description: link.description,	
+	}
+end
+
+json[:other_links] = @other_links.map do |link|
+	{
+		id: link.id,
+		websitename: link.websitename,
+		url: link.url,
+		user_id: link.user_id,
+		description: link.description,	
+	}
+end
+
+json[:events] = {
+	coin_events: @coin_events,
+	pending_event_count: @pending_event_count,
+}
+
+json

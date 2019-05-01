@@ -1,0 +1,14 @@
+json = {
+	questions: @questions,
+	sort_by: @sort_by,
+	question: @question,
+	topic: @topic,
+	inactive_count: @inactive_count,
+	pending_count: @pending_count,
+	accepted: @accepted,
+	pending: @pending,
+	rejected: @rejected,
+	included_topics: @included_topics,
+	open_topics: @open_topics,
+	open_topic_count: @open_topic_count,
+}

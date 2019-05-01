@@ -1,0 +1,6 @@
+json = {
+	event: @event,
+	nearby_events: @nearby_events
+}
+
+json

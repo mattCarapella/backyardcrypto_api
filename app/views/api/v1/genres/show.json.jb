@@ -1,0 +1,6 @@
+json = {
+	genre: @genre,
+	coins_in_genre_: @coins_in_genre_,
+}
+
+json

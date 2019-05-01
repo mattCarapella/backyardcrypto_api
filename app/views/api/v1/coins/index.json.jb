@@ -1,0 +1,14 @@
+@coins.map do |coin|	
+	{
+		id: coin.id,
+		link_name: coin.link_name,
+		currency_name: coin.currency_name,
+		currency_abbrev: coin.currency_abbrev,
+		price: coin.price,
+		supply: coin.supply_24,
+		volume_usd: coin.volume_24,
+		change: coin.change_24,
+		market_cap: coin.market_cap,
+		picture: coin.picture,
+	}
+end

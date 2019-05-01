@@ -1,0 +1,6 @@
+json = {
+	coin: @coin,
+	events: @events
+}
+
+json

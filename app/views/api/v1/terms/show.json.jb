@@ -1,0 +1,7 @@
+json = {
+	term: @term,
+  upvotes: @upvotes,
+  downvotes: @downvotes,
+  total_votes: @total_votes,
+  approval_rating: @approval_rating,
+}

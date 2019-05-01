@@ -1,0 +1,9 @@
+json = {
+	user: @user,
+	upvotes_questions: @upvoted_questions,
+	downvoted_questions: @downvoted_questions,
+	upvoted_events: @upvoted_events,
+	downvoted_events: @downvoted_events,
+}
+
+json

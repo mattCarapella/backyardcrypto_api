@@ -1,0 +1,10 @@
+json = {
+	path: @path,
+	accepted: @accepted,
+	pending:  @pending,
+	rejected: @rejected,
+	term_title: @term_title,
+	active_count: @active_count,
+	inactive_count: @inactive_count,
+	pending_count: @pending_count,
+}

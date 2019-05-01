@@ -1,0 +1,7 @@
+json = {	
+	key_player: @key_player,
+	upvotes: @upvotes,
+	downvotes: @downvotes,
+	total_votes: @total_votes,
+	approval_rating: @approval_rating,
+}
