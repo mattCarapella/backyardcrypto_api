@@ -73,8 +73,16 @@
     end
 
     def create
-      @question = current_user.questions.build(question_params)
+      #@question = current_user.questions.build(question_params)
+      
+      @question = Question.new(question_params)
       @question.coin = @coin
+      if @question.save
+        render json: @question, status: :created
+      else
+        render json: @question.errors, status: :unprocessable_entity
+      end
+
    #   if verify_recaptcha(model: @question) && @question.save
    #      Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted",
    #                              notifiable: @question)

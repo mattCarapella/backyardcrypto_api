@@ -159,9 +159,7 @@ module Api::V1
       # coin.save
       #redirect_to coin_path(coin)
     end
-
-
-
+    
     private
 
       def coin_params

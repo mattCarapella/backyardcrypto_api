@@ -1,7 +1,7 @@
 module Api::V1 
-  class TermsController < ApiController
-    before_action :set_coin 
+  class TermsController < ApiController  
     # before_action :authenticate_user!, except: [:index]
+    before_action :set_coin 
     load_and_authorize_resource
 
     def index
@@ -54,24 +54,23 @@ module Api::V1
     end
 
     def create
-      @term = current_user.terms.build(term_params)
+      #@term = current_user.terms.build(term_params)
+      @term = Term.new(term_params)
       @term.coin = @coin
+
       if @term.save # && verify_recaptcha(model: @term)
         if params[:coin_id]
-          Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", 
-                              notifiable: @term)
-          # flash[:notice] = "Your submission has been accepted and will be reviewed by a moderator."
-          # redirect_to coin_path(@coin)
+          render json: @term, status: :created
+          # Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", 
+          #                     notifiable: @term)
         else
-          admin_user = User.where("admin=?", true).first
-          Notification.create(recipient: admin_user, actor: current_user, action: "submitted", 
-                              notifiable: @term)
-          # flash[:notice] = "Your submission has been accepted and will be reviewed by a moderator."
-          # redirect_to terms_path
+          render json: @term, status: :created
+          # admin_user = User.where("admin=?", true).first
+          # Notification.create(recipient: admin_user, actor: current_user, action: "submitted", 
+          #                     notifiable: @term)
         end 
       else
-        # flash[:notice] = "reCaptcha verification unsuccessful. Please try again."
-        render 'new'
+        render json: @term.errors, status: :unprocessable_entity
       end
     end
 
@@ -136,7 +135,7 @@ module Api::V1
 
       def term_params
         params.require(:term).permit(:title, :caption, :content, :accepted, :pending, :rejected, :image,
-          :image_caption, :slug, :upvotes, :downvotes, :approval_rating)
+          :image_caption, :slug, :upvotes, :downvotes, :approval_rating, :coin_id)
       end
 
       def set_coin    

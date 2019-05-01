@@ -3,15 +3,15 @@ class KeyPlayer < ApplicationRecord
   friendly_id :title, use: [:slugged, :finders, :history]
   acts_as_votable
   belongs_to :coin
-  belongs_to :user
+  #belongs_to :user
   validates :title, presence: true
   validates :caption, presence: true
   validates :content, presence: true
-  validate :approve_only_one, on: :activate
+  #validate :approve_only_one, on: :activate
   
-  scope :active, -> { where(active: true) }
+  scope :active,   -> { where(active: true) }
   scope :inactive, -> { where(rejected: true) }
-  scope :pending, -> { where(pending: true) }
+  scope :pending,  -> { where(pending: true) }
 
   private 
 

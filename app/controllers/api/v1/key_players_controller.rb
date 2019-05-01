@@ -53,24 +53,23 @@ module Api::V1
     end
 
     def create
-      @key_player = current_user.key_players.build(key_player_params)
+      #@key_player = current_user.key_players.build(key_player_params)
+      @key_player = KeyPlayer.new(key_player_params)
       @key_player.coin = @coin
-      if verify_recaptcha(model: @key_player) && @key_player.save
+      #if verify_recaptcha(model: @key_player) && @key_player.save
+      if @key_player.save
         if params[:coin_id]
+          render json: @key_player, status: :created
           #Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", 
           #                    notifiable: @key_player)
-          flash[:notice] = "Your submission has been accepted and will be reviewed by a moderator."
-          redirect_to coin_path(@coin)
         else
+          render json: @key_player, status: :created
           #admin_user = User.where("admin=?", true).first
           #Notification.create(recipient: admin_user, actor: current_user, action: "submitted", 
           #                    notifiable: @key_player)
-          flash[:notice] = "Your submission has been accepted and will be reviewed by a moderator."
-          redirect_to key_players_path
         end 
       else
-        flash[:notice] = "reCaptcha verification unsuccessful. Please try again."
-        render 'new'
+        render json: @key_player.errors, status: :unprocessable_entity
       end
     end
 

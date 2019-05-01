@@ -38,15 +38,15 @@ module Api::V1
     end
 
   	def create
-  	  @event = current_user.events.build(event_params)
-  	  @event.coin = @coin
+  	  #@event = current_user.events.build(event_params)
+  	  @event = Event.new(event_params)
+      @event.coin = @coin
       if @event.save
         @event.geocode
         @event.save!
-       #  flash[:notice] = "Your submission has been accepted and will be reviewed by a moderator."
-  	    # redirect_to coin_path(@coin)
+        render json: @event, status: :created
   	  else
-  	    render 'new'
+        render json: @event.errors, status: :unprocessable_entity
   	  end
   	end
 
