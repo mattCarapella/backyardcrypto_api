@@ -6,10 +6,10 @@ module Api::V1
     #load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
     # before_action :authenticate_user!, except: [:index, :show]
-    #before_action :get_submitted_picture, only: [:show, :create]
+    before_action :get_submitted_picture, only: [:show, :create]
     before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
-    before_action :set_user
+    # before_action :set_user
     # before_action :get_localized_event_datetime, only: :show
 
     # rescue_from ActiveRecord::RecordNotFound do |exception|
@@ -20,9 +20,9 @@ module Api::V1
 
     def index
 
-      @coins = Coin.all #active_coins
+      @coins = Coin.active_coins
       # @coins = Coin.all.search(params[:currency_name])
-      populate_coin_data if @coins.exists?
+      populate_coin_data if @coins.any?
       # @coins = @coins.sort_by(&:market_cap).reverse
     end
 
@@ -96,8 +96,8 @@ module Api::V1
       # ------ Key Players / Terms ------
       @accepted_terms                 = @coin.terms.where("accepted=?", true)
       @accepted_key_players           = @coin.key_players.where("accepted=?", true)
-      @pending_term_count             = Term.pending.where("coin_id=?", @coin.id).count
-      @pending_kp_count               = KeyPlayer.pending.where("coin_id=?", @coin.id).count
+      @pending_term_count             = Term.pending.where("coin_id=?", @coin.id).count if @coin.terms.any?
+      @pending_kp_count               = KeyPlayer.pending.where("coin_id=?", @coin.id).count if @coin.key_players.any?
       
       # ------ Posts -------
       @community_posts                = Post.where("coin_id=?", @coin).first(10)
@@ -106,7 +106,7 @@ module Api::V1
         @favorite_coins               = @coin.favorites.where("user_id=?", current_user.id)
       end 
 
-      #populate_coin_data
+      populate_coin_data
     end
 
     def edit   
@@ -145,28 +145,31 @@ module Api::V1
 
     def destroy
       @coin = Coin.find(params[:id])
-      if current_user.admin?
-        @coin.destroy
-      end
-      render json: { status: 'SUCCESS', message: 'deleted the coin', data: @coin }
+      # if current_user.admin?
+      #   @coin.destroy
+      # end
+      # render json: { status: 'SUCCESS', message: 'deleted the coin', data: @coin }
+      @coin.destroy
     end
 
     def flop
       # authorize! :destroy, @coin
-
       # coin = Coin.find(params[:id])
       # coin.flop
 
-      coin.accepted = !coin.accepted
-      if coin.accepted?
+      if coin.pending?
+        coin.accepted = true
         coin.pending = false
         coin.rejected = false
-      elsif !coin.accepted?
-        coin.pending = true
+      elsif coin.accepted?
+        coin.accepted = false
+        coin.pending = false
+        coin.rejected = true
       end
       coin.save
       #redirect_to coin_path(coin)
     end
+
 
     private
 
@@ -213,42 +216,32 @@ module Api::V1
 
       def populate_coin_data
         if @coins
-          p "****** @ COINS"
           coin_csv = @coins.map{|x| x.currency_abbrev}.to_csv
         else
           coin_csv = @coin.currency_abbrev
         end
+
         response = HTTParty.get("https://min-api.cryptocompare.com/data/pricemultifull?fsyms=#{coin_csv}&tsyms=USD&api_key=#{Rails.application.credentials.cryptocompare_api_key}")
-        @data = response['RAW']
-        if @data
-          p "***** @DATA"
-          @data.each do |cryptocompare_coin|
-            if @coins
-              byc_coin = @coins.select { |x| x.currency_abbrev == cryptocompare_coin[0] }.first
-            else
-              byc_coin = @coin
-            end
-            byc_coin.price        = cryptocompare_coin[1]['USD']['PRICE']
-            byc_coin.market_cap   = cryptocompare_coin[1]['USD']['MKTCAP']
-            byc_coin.supply_24    = cryptocompare_coin[1]['USD']['SUPPLY']
-            byc_coin.volume_24    = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']
-            byc_coin.change_24    = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']
-            byc_coin.market_cap   = 0 if byc_coin.market_cap == nil            
+        
+        if response.values[0] != "Error"     
+          @data = response['RAW']
+          if @data
+            @data.each do |cryptocompare_coin|
+              if cryptocompare_coin[1]
+                if @coins
+                  byc_coin = @coins.select { |x| x.currency_abbrev == cryptocompare_coin[0] }.first
+                else
+                  byc_coin = @coin
+                end
+                byc_coin.price        = cryptocompare_coin[1]['USD']['PRICE']
+                byc_coin.market_cap   = cryptocompare_coin[1]['USD']['MKTCAP']
+                byc_coin.supply_24    = cryptocompare_coin[1]['USD']['SUPPLY']
+                byc_coin.volume_24    = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']
+                byc_coin.change_24    = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']
+                byc_coin.market_cap   = 0 if byc_coin.market_cap == nil     
+              end       
+            end     
           end
-        else 
-          @data.each do |cryptocompare_coin|
-            if @coins
-              byc_coin = @coins.select { |x| x.currency_abbrev == cryptocompare_coin[0] }.first
-            else
-              byc_coin = @coin
-            end
-            byc_coin.price        = 0
-            byc_coin.market_cap   = 0
-            byc_coin.supply_24    = 0
-            byc_coin.volume_24    = 0
-            byc_coin.change_24    = 0
-            byc_coin.market_cap   = 0 if byc_coin.market_cap == nil            
-          end        
         end
       end
 
@@ -257,7 +250,11 @@ module Api::V1
         if cryptocompare_response.present?
           if cryptocompare_response['Data']
             if @coin.currency_abbrev.present?
-              @img_url_ = cryptocompare_response['BaseImageUrl'] + cryptocompare_response['Data'][@coin.currency_abbrev.upcase]['ImageUrl']
+              
+              if cryptocompare_response['Data'][@coin.currency_abbrev.upcase]
+                @img_url_ = cryptocompare_response['BaseImageUrl'] + cryptocompare_response['Data'][@coin.currency_abbrev.upcase]['ImageUrl']
+              end
+
             end
           end
         end

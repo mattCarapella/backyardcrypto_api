@@ -38,6 +38,14 @@
 # 						 accepted: true, pending: false, rejected: false, coinmarket_id: 1, user_id: 1)
 
 
+Coin.create!(currency_name: "FakeCoin", currency_abbrev: "FCK", founder: "Some Dude", mineable: true, 
+						 website: "https://fc.com/", reddit: "https://www.reddit.com/r/fc/", 
+						 facebook: "https://www.facebook.com/fc/", twitter: "https://twitter.com/fc?lang=en", 
+						 discord: "https://discord.me/page/fc", github: "https://github.com/fc", 
+						 coinmarketcap: "https://coinmarketcap.com/currencies/fc/", slug: "fc", 
+						 accepted: true, pending: false, rejected: false, coinmarket_id: 2, user_id: 1)
+
+
 # Question.create!(ques_num: 1, id: 1, content:  "<p>Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. </p>\r\n", 
 # 								 user_id: 1, coin_id: 1, accepted: true, pending: false, rejected: false)
 
@@ -141,16 +149,16 @@
 # 	user_id: 1
 # )
 
-Term.create!(
-	title: 'Pending 2',
-	caption: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
-	content: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
-	accepted: false,
-	pending: true,
-	rejected: false,
-	coin_id: 1,
-	user_id: 1
-)
+# Term.create!(
+# 	title: 'Pending 2',
+# 	caption: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
+# 	content: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
+# 	accepted: false,
+# 	pending: true,
+# 	rejected: false,
+# 	coin_id: 1,
+# 	user_id: 1
+# )
 
 # KeyPlayer.create!(
 # 	title: 'SomeDude',
@@ -196,16 +204,16 @@ Term.create!(
 # 	user_id: 1
 # )
 
-KeyPlayer.create!(
-	title: 'Pending 1',
-	caption: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch..',
-	content: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch.',
-	accepted: false,
-	pending: true,
-	rejected: false,
-	coin_id: 1,
-	user_id: 1
-)
+# KeyPlayer.create!(
+# 	title: 'Pending 1',
+# 	caption: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch..',
+# 	content: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch.',
+# 	accepted: false,
+# 	pending: true,
+# 	rejected: false,
+# 	coin_id: 1,
+# 	user_id: 1
+# )
 
 # KeyPlayer.create!(
 # 	title: 'Pending 2',

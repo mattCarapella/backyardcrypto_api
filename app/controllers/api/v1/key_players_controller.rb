@@ -93,12 +93,10 @@ module Api::V1
 
     def destroy
       @key_player.destroy
-      redirect_to request.referrer
-      flash[:notice] = "Submission deleted."
     end
 
     def activate
-      authorize! :update, @key_player
+      #authorize! :update, @key_player
       key_player = KeyPlayer.find(params[:id])
       if key_player.valid? :activate 
         key_player.accepted = true

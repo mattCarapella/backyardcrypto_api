@@ -2,7 +2,7 @@ module Api::V1
   class TermsController < ApiController  
     # before_action :authenticate_user!, except: [:index]
     before_action :set_coin 
-    load_and_authorize_resource
+    #load_and_authorize_resource
 
     def index
       
@@ -98,7 +98,8 @@ module Api::V1
     end
 
     def destroy
-      @term = Term.friendly.find(params[:id])
+      # @term = Term.friendly.find(params[:id])
+      @term = Term.find(params[:id])
       @term.destroy
       # redirect_to request.referrer
       # flash[:notice] = "Submission deleted."

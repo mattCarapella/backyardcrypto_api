@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
     	resources :coins do 	
         get 'pending', to: 'coins#pending', on: :collection
-
+  
         resources :events do 
           get 'calendar', to: 'events#calendar', on: :collection
           member do
