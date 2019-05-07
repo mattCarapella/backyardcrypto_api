@@ -31,6 +31,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby] 				# Windows
 
 gem 'devise', '~> 4.6', '>= 4.6.2'
 gem 'simple_token_authentication', '~> 1.0'
+
 gem 'jwt', '~> 2.1'
 gem 'rack-cors', '~> 1.0', '>= 1.0.3'
 gem 'httparty', '~> 0.16.4'

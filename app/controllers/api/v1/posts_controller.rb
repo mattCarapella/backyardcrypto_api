@@ -54,25 +54,25 @@ module Api::V1
   	def create
   		if params[:coin_id]
   			@coin = Coin.find(params[:coin_id])
-  		  @post = current_user.posts.build(post_params)
-  		  @post.user = current_user
-  		  @post.coin = @coin
+
+  		  #@post = current_user.posts.build(post_params)
+  		  #@post.user = current_user	  
+        @post = Post.new
+
+        @post.coin = @coin
         # @post.post_type = "coin"
-  		  if @post.save
-  		    redirect_to coin_post_path(@coin, @post.id)
-  		  else
-  		    render 'new'
-  		  end
   		else
-  			@post = current_user.posts.build(post_params)
-  		  @post.user = current_user
+  			# @post = current_user.posts.build(post_params)
+  		  #  @post.user = current_user
+        @post = Post.new
+      
         # @post.post_type = "general"
-  		  if @post.save
-  		    redirect_to post_path(@post.id)
-  		  else
-  		    render 'new'
-  		  end
   		end
+      if @post.save
+        render json: @post, status: :created
+      else
+        render json: @post.errors, status: :unprocessable_entity
+      end
   	end
 
     def edit

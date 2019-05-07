@@ -19,10 +19,11 @@ module Api::V1
     # end
 
     def index
-      @coins = Coin.active_coins
+
+      @coins = Coin.all#active_coins
       # @coins = Coin.all.search(params[:currency_name])
       populate_coin_data if @coins.exists?
-      #@coins = @coins.sort_by(&:market_cap).reverse
+      # @coins = @coins.sort_by(&:market_cap).reverse
     end
 
     def pending
@@ -34,7 +35,7 @@ module Api::V1
     end
 
     def create
-      #@coin = current_user.coins.build(coin_params)
+      # @coin = current_user.coins.build(coin_params)
       @coin = Coin.new(coin_params)
       if @coin.save
         render json: @coin, status: :created
@@ -152,17 +153,18 @@ module Api::V1
 
     def flop
       # authorize! :destroy, @coin
-      coin = Coin.find(params[:id])
-      coin.flop
 
-      # coin.accepted = !coin.accepted
-      # if coin.accepted?
-      #   coin.pending = false
-      #   coin.rejected = false
-      # elsif !coin.accepted?
-      #   coin.pending = true
-      # end
-      # coin.save
+      # coin = Coin.find(params[:id])
+      # coin.flop
+
+      coin.accepted = !coin.accepted
+      if coin.accepted?
+        coin.pending = false
+        coin.rejected = false
+      elsif !coin.accepted?
+        coin.pending = true
+      end
+      coin.save
       #redirect_to coin_path(coin)
     end
 
@@ -270,8 +272,8 @@ module Api::V1
 
       def get_submission_count
         @included_topics    = @coin.questions.where('ques_num=? AND accepted=?', 5, true).map(&:open_topic)
-        @open_topics        = @coin.questions.where('ques_num=? and pending=?', 5, true).select { |a| @included_topics.exclude? (a.open_topic)}
-        @open_topic_count   = @coin.questions.where('ques_num=? and pending=?', 5, true).select { |a| @included_topics.exclude? (a.open_topic)}.count
+        @open_topics        = @coin.questions.where('ques_num=? and pending=?',  5, true).select { |a| @included_topics.exclude? (a.open_topic)}
+        @open_topic_count   = @coin.questions.where('ques_num=? and pending=?',  5, true).select { |a| @included_topics.exclude? (a.open_topic)}.count
       end
 
       def get_pending_term_and_kp_counts

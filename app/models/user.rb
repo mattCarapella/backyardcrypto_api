@@ -1,7 +1,10 @@
 class User < ApplicationRecord
+  #acts_as_token_authenticatable
 	acts_as_voter
-  acts_as_token_authenticatable
-  
+
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
   has_many :coins
   has_many :questions, dependent: :destroy
   has_many :events, dependent: :destroy
@@ -21,8 +24,6 @@ class User < ApplicationRecord
 
   scope :admin_users, -> { where(admin: true) }
 
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
 
   # validates :username, presence: :true, uniqueness: { case_sensitive: false }
   # validates_format_of :username, with: /^[a-zA-Z0-9_\.]*$/, :multiline => true

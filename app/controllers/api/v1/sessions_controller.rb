@@ -5,9 +5,8 @@ module Api::V1
   		user = User.where(email: params[:email]).first
 
   		if user&.valid_password?(params[:password])
-  			p "****** SESSION CREATED ********"
   			render json: user.as_json(only: [:id, :email, :username, :authentication_token]), status: :created
-  		else 
+      else 
   			head(:unauthorized)
   		end
   	end 
