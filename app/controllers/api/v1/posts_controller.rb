@@ -5,28 +5,31 @@ module Api::V1
   	load_and_authorize_resource
 
     def index
-  	  if params[:coin_id]
-        @path = "coin"
-  	  	@coin = Coin.find(params[:coin_id])
-  	    if params[:sort] == "Popular"
-          @sorted_by = "popular"
-  	      @posts = Post.where(coin_id: @coin.id)
-  	        .left_joins(:comments)
-  	        .group(:id)
-  	        .order('COUNT(comments.id) ASC')
-  	    else
-          @sorted_by = "created_at"
-  	      @posts = Post.where(coin_id: @coin.id).order("created_at DESC")
-  	    end
-  	  else
-        @path = "general" 
-    		@posts = Post.where(coin_id: nil)
-    	end
-      @posts.each {
-          |p|
-          p.send('upvotes=', p.get_upvotes.size)
-          p.send('downvotes=', p.get_downvotes.size)
-      }
+
+      @posts = Post.all
+
+  	  # if params[:coin_id]
+     #    @path = "coin"
+  	  # 	@coin = Coin.find(params[:coin_id])
+  	  #   if params[:sort] == "Popular"
+     #      @sorted_by = "popular"
+  	  #     @posts = Post.where(coin_id: @coin.id)
+  	  #       .left_joins(:comments)
+  	  #       .group(:id)
+  	  #       .order('COUNT(comments.id) ASC')
+  	  #   else
+     #      @sorted_by = "created_at"
+  	  #     @posts = Post.where(coin_id: @coin.id).order("created_at DESC")
+  	  #   end
+  	  # else
+     #    @path = "general" 
+    	# 	@posts = Post.where(coin_id: nil)
+    	# end
+     #  @posts.each {
+     #      |p|
+     #      p.send('upvotes=', p.get_upvotes.size)
+     #      p.send('downvotes=', p.get_downvotes.size)
+     #  }
     end
 
     def show
@@ -54,25 +57,25 @@ module Api::V1
   	def create
   		if params[:coin_id]
   			@coin = Coin.find(params[:coin_id])
-
-  		  #@post = current_user.posts.build(post_params)
-  		  #@post.user = current_user	  
-        @post = Post.new
-
-        @post.coin = @coin
+  		  @post = current_user.posts.build(post_params)
+  		  @post.user = current_user
+  		  @post.coin = @coin
         # @post.post_type = "coin"
+  		  if @post.save
+  		    redirect_to coin_post_path(@coin, @post.id)
+  		  else
+  		    render 'new'
+  		  end
   		else
-  			# @post = current_user.posts.build(post_params)
-  		  #  @post.user = current_user
-        @post = Post.new
-      
+  			@post = current_user.posts.build(post_params)
+  		  @post.user = current_user
         # @post.post_type = "general"
+  		  if @post.save
+  		    redirect_to post_path(@post.id)
+  		  else
+  		    render 'new'
+  		  end
   		end
-      if @post.save
-        render json: @post, status: :created
-      else
-        render json: @post.errors, status: :unprocessable_entity
-      end
   	end
 
     def edit

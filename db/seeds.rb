@@ -97,88 +97,88 @@
 # 	exchange: true
 # )
 
-# Term.create!(
-# 	title: 'Cryptography',
-# 	caption: 'Cryptography involves creating written or generated codes that allow information to be kept secret. Cryptography converts data into a format that is unreadable for an unauthorized user, allowing it to be transmitted without unauthorized entities decoding it back into a readable format, thus compromising the data..',
-# 	content: 'Cryptography involves creating written or generated codes that allow information to be kept secret. Cryptography converts data into a format that is unreadable for an unauthorized user, allowing it to be transmitted without unauthorized entities decoding it back into a readable format, thus compromising the data.',
-# 	accepted: true,
-# 	pending: false,
-# 	rejected: false,
-# 	coin_id: 1,
-# 	user_id: 1
-# )
+Term.create!(
+	title: 'Cryptography',
+	caption: 'Cryptography involves creating written or generated codes that allow information to be kept secret. Cryptography converts data into a format that is unreadable for an unauthorized user, allowing it to be transmitted without unauthorized entities decoding it back into a readable format, thus compromising the data..',
+	content: 'Cryptography involves creating written or generated codes that allow information to be kept secret. Cryptography converts data into a format that is unreadable for an unauthorized user, allowing it to be transmitted without unauthorized entities decoding it back into a readable format, thus compromising the data.',
+	accepted: true,
+	pending: false,
+	rejected: false,
+	coin_id: 1,
+	user_id: 1
+)
 
-# Term.create!(
-# 	title: 'Mining',
-# 	caption: 'Bitcoin mining is the processing of transactions in the digital currency system, in which the records of current Bitcoin transactions, known as a blocks, are added to the record of past transactions, known as the block chain..',
-# 	content: 'Bitcoin mining is the processing of transactions in the digital currency system, in which the records of current Bitcoin transactions, known as a blocks, are added to the record of past transactions, known as the block chain.',
-# 	accepted: true,
-# 	pending: false,
-# 	rejected: false,
-# 	coin_id: 1,
-# 	user_id: 1
-# )
+Term.create!(
+	title: 'Mining',
+	caption: 'Bitcoin mining is the processing of transactions in the digital currency system, in which the records of current Bitcoin transactions, known as a blocks, are added to the record of past transactions, known as the block chain..',
+	content: 'Bitcoin mining is the processing of transactions in the digital currency system, in which the records of current Bitcoin transactions, known as a blocks, are added to the record of past transactions, known as the block chain.',
+	accepted: true,
+	pending: false,
+	rejected: false,
+	coin_id: 1,
+	user_id: 1
+)
 
-# Term.create!(
-# 	title: 'Private Key',
-# 	caption: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
-# 	content: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
-# 	accepted: true,
-# 	pending: false,
-# 	rejected: false,
-# 	coin_id: 1,
-# 	user_id: 1
-# )
+Term.create!(
+	title: 'Private Key',
+	caption: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
+	content: 'A private key is a sophisticated form of cryptography that allows a user to access his or her cryptocurrency. A private key is an integral aspect of bitcoin and altcoins, and its security make up helps to protect a user from theft and unauthorized access to funds.',
+	accepted: true,
+	pending: false,
+	rejected: false,
+	coin_id: 1,
+	user_id: 1
+)
 
-# KeyPlayer.create!(
-# 	title: 'SomeDude',
-# 	caption: 'Faucibus purus in massa tempor nec feugiat nisl.',
-# 	content: 'Commodo viverra maecenas accumsan lacus. Pellentesque massa ',
-# 	accepted: true,
-# 	pending: false,
-# 	rejected: false,
-# 	coin_id: 1,
-# 	user_id: 1
-# )
+KeyPlayer.create!(
+	title: 'SomeDude',
+	caption: 'Faucibus purus in massa tempor nec feugiat nisl.',
+	content: 'Commodo viverra maecenas accumsan lacus. Pellentesque massa ',
+	accepted: true,
+	pending: false,
+	rejected: false,
+	coin_id: 1,
+	user_id: 1
+)
 
-# KeyPlayer.create!(
-# 	title: 'Satoshi Nakamoto',
-# 	caption: 'Founder of Bitcoin.',
-# 	content: 'Commodo viverra maecenas accumsan lacus. Pellentesque massa ',
-# 	accepted: true,
-# 	pending: false,
-# 	rejected: false,
-# 	coin_id: 1,
-# 	user_id: 1
-# )
+KeyPlayer.create!(
+	title: 'Satoshi Nakamoto',
+	caption: 'Founder of Bitcoin.',
+	content: 'Commodo viverra maecenas accumsan lacus. Pellentesque massa ',
+	accepted: true,
+	pending: false,
+	rejected: false,
+	coin_id: 1,
+	user_id: 1
+)
 
-# KeyPlayer.create!(
-# 	title: 'Gavin Anderson',
-# 	caption: 'Lead of Bitcoins core developers and Chief Scientist of the Bitcoin Foundation.',
-# 	content: 'Lead of Bitcoins core developers and Chief Scientist of the Bitcoin Foundation.',
-# 	accepted: true,
-# 	pending: false,
-# 	rejected: false,
-# 	coin_id: 1,
-# 	user_id: 1
-# )
+KeyPlayer.create!(
+	title: 'Gavin Anderson',
+	caption: 'Lead of Bitcoins core developers and Chief Scientist of the Bitcoin Foundation.',
+	content: 'Lead of Bitcoins core developers and Chief Scientist of the Bitcoin Foundation.',
+	accepted: true,
+	pending: false,
+	rejected: false,
+	coin_id: 1,
+	user_id: 1
+)
 
-# KeyPlayer.create!(
-# 	title: 'Jeff Garzik',
-# 	caption: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch..',
-# 	content: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch.',
-# 	accepted: true,
-# 	pending: false,
-# 	rejected: false,
-# 	coin_id: 1,
-# 	user_id: 1
-# )
+KeyPlayer.create!(
+	title: 'Jeff Garzik',
+	caption: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch..',
+	content: 'Satoshi client core developer, GPU poold software and the founder of Bitcoin Watch.',
+	accepted: true,
+	pending: false,
+	rejected: false,
+	coin_id: 1,
+	user_id: 1
+)
 
-# Post.create!(id: 1, content:  "\r\nAn employee inspects machines for the production of bitcoins.\r\nAn employee inspects machines for the production of bitcoins. Photograph by Olga Maltseva/AFP/Getty Images\r\nText size\r\n\r\nA year ago, Bitcoin was practically a foreign language to me.\r\n\r\nThen I watched an episode of Grey’s Anatomy in which the hospital featured in the show was attacked by a group of hackers, who demanded 4932 Bitcoins in ransom (worth $20 million in the setting of the program). After doing some research and consulting with friends who had bought Bitcoin, I thought, well, maybe I should put some money on it, too. That was my first investment, made before I really understood anything about finance.", url: "https://www.barrons.com/articles/is-bitcoin-dead-and-other-questions-1543669201", coin_id: 1, user_id: 1, title: "I Bought Bitcoin When the Price Was Soaring. Here’s What I Learned")
+Post.create!(id: 1, content:  "\r\nAn employee inspects machines for the production of bitcoins.\r\nAn employee inspects machines for the production of bitcoins. Photograph by Olga Maltseva/AFP/Getty Images\r\nText size\r\n\r\nA year ago, Bitcoin was practically a foreign language to me.\r\n\r\nThen I watched an episode of Grey’s Anatomy in which the hospital featured in the show was attacked by a group of hackers, who demanded 4932 Bitcoins in ransom (worth $20 million in the setting of the program). After doing some research and consulting with friends who had bought Bitcoin, I thought, well, maybe I should put some money on it, too. That was my first investment, made before I really understood anything about finance.", url: "https://www.barrons.com/articles/is-bitcoin-dead-and-other-questions-1543669201", coin_id: 1, user_id: 1, title: "I Bought Bitcoin When the Price Was Soaring. Here’s What I Learned")
 
-# Post.create!(id: 2, content: "whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1.", url: "https://www.barrons.com/articles/is-bitcoin-dead-and-other-questions-1543669201", coin_id: nil, user_id: 1, title: "WHOLE SITE POST EXAMPLE 1")
+Post.create!(id: 2, content: "whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1. whole site post example 1.", url: "https://www.barrons.com/articles/is-bitcoin-dead-and-other-questions-1543669201", coin_id: nil, user_id: 1, title: "WHOLE SITE POST EXAMPLE 1")
 
-# Post.create!(id: 3, content:  "whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2.", url: "https://www.barrons.com/articles/is-bitcoin-dead-and-other-questions-1543669201", coin_id: nil, user_id: 1, title: "WHOLE SITE POST EXAMPLE 2")
+Post.create!(id: 3, content:  "whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2. whole site post example 2.", url: "https://www.barrons.com/articles/is-bitcoin-dead-and-other-questions-1543669201", coin_id: nil, user_id: 1, title: "WHOLE SITE POST EXAMPLE 2")
 
 
 

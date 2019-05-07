@@ -78,7 +78,7 @@ Rails.application.routes.draw do
           get 'discussion', to: 'questions#discussion', on: :member
           get 'pending_topics', to: 'questions#pending_topics', on: :collection
           get 'challenge', to: 'questions#challenge', on: :member             # user submits new term
-          #get 'flag', to: 'questions#flag', on: :member
+          # get 'flag', to: 'questions#flag', on: :member
           get 'archived', to: 'questions#archive', on: :collection
           member do
             get :activate
