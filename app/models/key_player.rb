@@ -9,9 +9,9 @@ class KeyPlayer < ApplicationRecord
   validates :content, presence: true
   #validate :approve_only_one, on: :activate
   
-  scope :active,   -> { where(active: true) }
-  scope :inactive, -> { where(rejected: true) }
-  scope :pending,  -> { where(pending: true) }
+  scope :active_kp,   -> { where(active: true) }
+  scope :inactive_kp, -> { where(rejected: true) }
+  scope :pending_kp,  -> { where(pending: true) }
 
   private 
 
