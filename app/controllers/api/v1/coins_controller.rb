@@ -20,7 +20,7 @@ module Api::V1
 
     def index
 
-      @coins = Coin.all#active_coins
+      @coins = Coin.all #active_coins
       # @coins = Coin.all.search(params[:currency_name])
       populate_coin_data if @coins.exists?
       # @coins = @coins.sort_by(&:market_cap).reverse
@@ -106,7 +106,7 @@ module Api::V1
         @favorite_coins               = @coin.favorites.where("user_id=?", current_user.id)
       end 
 
-      populate_coin_data
+      #populate_coin_data
     end
 
     def edit   
@@ -213,6 +213,7 @@ module Api::V1
 
       def populate_coin_data
         if @coins
+          p "****** @ COINS"
           coin_csv = @coins.map{|x| x.currency_abbrev}.to_csv
         else
           coin_csv = @coin.currency_abbrev
@@ -220,6 +221,7 @@ module Api::V1
         response = HTTParty.get("https://min-api.cryptocompare.com/data/pricemultifull?fsyms=#{coin_csv}&tsyms=USD&api_key=#{Rails.application.credentials.cryptocompare_api_key}")
         @data = response['RAW']
         if @data
+          p "***** @DATA"
           @data.each do |cryptocompare_coin|
             if @coins
               byc_coin = @coins.select { |x| x.currency_abbrev == cryptocompare_coin[0] }.first

@@ -5,7 +5,10 @@ module Api::V1
     load_and_authorize_resource
 
     def index
+      
       if params[:term].blank?  
+      
+
       # All terms archive
         if params[:coin_id]
           # Coin specific terminology index pages
@@ -18,7 +21,7 @@ module Api::V1
           # Whole site terminology index page
           @path = "general"
           @accepted = Term.where("accepted=?", true).order("title ASC")
-          @pending  = Term.pending.order("title ASC").select { |t| t.coin_id == nil }
+          @pending  = Term.pending.order("title ASC")
           @rejected = Term.where("rejected=?", true).order("title ASC")      
         end  
 
