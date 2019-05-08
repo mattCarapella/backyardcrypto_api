@@ -47,21 +47,21 @@ module Api::V1
     def show
       @coin = Coin.friendly.find(params[:id])
 
-      # unless @coin.accepted or (current_user and current_user.admin?)
-      #   redirect_to coins_path
-      #   flash[:notice] = "Currency not found. Please choose from the following."
-      # end
+      unless @coin.accepted or (current_user and current_user.admin?)
+        redirect_to coins_path
+        flash[:notice] = "Currency not found. Please choose from the following."
+      end
 
       # ------ Events ------- 
       @coin_events = @coin.events.order(:date)
       @pending_event_count = Event.pending_events.where("coin_id=?", @coin.id).count
 
-      # @coin_events.each {
-      #     |e|
-      #     e.send('upvotes=', e.get_upvotes.size)
-      #     e.send('downvotes=', e.get_downvotes.size)
-      # }
-      
+      @coin_events.each {
+          |e|
+          e.send('upvotes=', e.get_upvotes.size)
+          e.send('downvotes=', e.get_downvotes.size)
+      }
+       
       # ------ Links ------- 
       @coin_exchanges                 = Link.where("exchange=? AND accepted=? AND coin_id=?", true, true, @coin.id).order('websitename ASC')
       @other_links                    = Link.where("exchange=? AND accepted=? AND coin_id=?", false, true, @coin.id).order('websitename ASC')
@@ -89,15 +89,15 @@ module Api::V1
       @open_topic_accepted            = Question.where("ques_num=? AND accepted=? AND coin_id=?",5, true, @coin.id).order("created_at ASC")
       @open_topic_submitted           = Question.where("ques_num=? AND pending=? AND coin_id=?", 5, true, @coin.id)
      
-      #@open_topic_all = @coin.questions.where("ques_num=?", 5)
-      #@open_topic_accepted, @open_topic_submitted = @open_topic_all.partition { |c| c.accepted? }
-      #@open_topic_pending, @open_topic_archived   = @open_topic_submitted.partition { |c| c.pending? }
+      @open_topic_all                 = @coin.questions.where("ques_num=?", 5)
+      @open_topic_accepted, @open_topic_submitted = @open_topic_all.partition { |c| c.accepted? }
+      @open_topic_pending, @open_topic_archived   = @open_topic_submitted.partition { |c| c.pending? }
 
       # ------ Key Players / Terms ------
       @accepted_terms                 = @coin.terms.where("accepted=?", true)
       @accepted_key_players           = @coin.key_players.where("accepted=?", true)
-      @pending_term_count             = Term.pending.where("coin_id=?", @coin.id).count if @coin.terms.any?
-      @pending_kp_count               = KeyPlayer.pending.where("coin_id=?", @coin.id).count if @coin.key_players.any?
+      @pending_term_count             = Term.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.terms.any?
+      @pending_kp_count               = KeyPlayer.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.key_players.any?
       
       # ------ Posts -------
       @community_posts                = Post.where("coin_id=?", @coin).first(10)
@@ -223,9 +223,11 @@ module Api::V1
 
         response = HTTParty.get("https://min-api.cryptocompare.com/data/pricemultifull?fsyms=#{coin_csv}&tsyms=USD&api_key=#{Rails.application.credentials.cryptocompare_api_key}")
         
-        if response.values[0] != "Error"     
+        if response.values[0] != "Error"   
+          p "***** RESPONSE !ERROR"  
           @data = response['RAW']
           if @data
+            p "****** @DATA"
             @data.each do |cryptocompare_coin|
               if cryptocompare_coin[1]
                 if @coins
@@ -233,7 +235,9 @@ module Api::V1
                 else
                   byc_coin = @coin
                 end
+                p "******* BYC COIN: " + byc_coin.currency_name
                 byc_coin.price        = cryptocompare_coin[1]['USD']['PRICE']
+                p "****** PRICE " + byc_coin.price.to_s
                 byc_coin.market_cap   = cryptocompare_coin[1]['USD']['MKTCAP']
                 byc_coin.supply_24    = cryptocompare_coin[1]['USD']['SUPPLY']
                 byc_coin.volume_24    = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']

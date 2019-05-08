@@ -121,7 +121,7 @@ module Api::V1
       end
 
       def set_coin
-        @coin = Coin.find(params[:coin_id])
+        @coin = Coin.friendly.find(params[:coin_id])
       end
 
       def get_upvotes

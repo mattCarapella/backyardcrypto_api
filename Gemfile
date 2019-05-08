@@ -16,8 +16,9 @@ gem 'bootsnap', '>= 1.1.0', require: false 								# Reduces boot times through 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw] 		# Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rspec-rails', '~> 3.8', '>= 3.8.2'
-	gem 'factory_girl', '~> 4.9'   							# deprecated -> use factory bot
-	gem 'ffaker', '~> 2.11'
+	#gem 'factory_girl', '~> 4.9'   							# deprecated -> use factory bot
+	#gem 'ffaker', '~> 2.11'
+	gem 'faker', '~> 1.9', '>= 1.9.3'
 end
 
 group :development do

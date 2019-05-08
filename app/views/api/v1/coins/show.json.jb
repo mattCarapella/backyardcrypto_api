@@ -11,13 +11,13 @@ json = {
 	moderator_id: @coin.moderator_id,
 	created_at: @coin.created_at,
 	updated_at: @coin.updated_at,
-	#permalink: @coin.permalink,
+	# permalink: @coin.permalink,
 	genre: @coin.genre,
-	#coinmarket_id: @coin.coinmarket_id,
-	#rejected: @coin.rejected,
-	#pending: @coin.pending, 
-	#accepted: @coin.accepted,
-	#accepted_at: @coin.accepted_at,
+	coinmarket_id: @coin.coinmarket_id,
+	rejected: @coin.rejected,
+	pending: @coin.pending, 
+	accepted: @coin.accepted,
+	accepted_at: @coin.accepted_at,
 	
 	#===================== BASIC INFO =====================
 	volume_usd: @coin.volume_usd,
@@ -40,7 +40,7 @@ json = {
 
 	#===================== PENDING COUNT INFO FOR ADMIN / ARCHIVE BUTTONS =====================
 	pending_brief_overview_count: @pending_brief_overview_count,
-	pending_history_count: @pending_history_count,
+  pending_history_count: @pending_history_count,
 	pending_govmodel_count: @pending_govmodel_count,
 	pending_busmodel_count:	@pending_busmodel_count,
 	pending_comoutline_count: @pending_comoutline_count,
@@ -69,33 +69,32 @@ json[:overview] = {
 	general_accepted: @general_accepted,
 }
 
-#json[:indepth_analysis] = @open_topic_accepted.map do |question|
-#	{
-#		id: question.id,
-#		ques_num: question.ques_num,
-#		open_topic: question.open_topic,
-#	  content: question.content,
-#	  user_id: question.user_id,
-#	  upvotes: question.upvotes,
-#	  downvotes: question.downvotes,
-#	  approval_rating: question.approval_rating,
-#	}
-#end
+json[:indepth_analysis] = @open_topic_accepted.map do |question|
+	{
+		id: question.id,
+		ques_num: question.ques_num,
+		open_topic: question.open_topic,
+	  content: question.content,
+	  user_id: question.user_id,
+	  upvotes: question.upvotes,
+	  downvotes: question.downvotes,
+	  approval_rating: question.approval_rating,
+	}
+end
 
 json[:indepth_analysis] = {
 	open_topic_accepted: @open_topic_accepted,
 }
 
-json[:terms] = @accepted_terms.map do |term|
-	{
-		id: term.id,
-		title: term.title,
-		caption: term.caption,
-		content: term.content,
-		user_id: term.user_id,
-	}
-	
-end
+ json[:terms] = @accepted_terms.map do |term|
+ 	{
+ 		id: term.id,
+ 		title: term.title,
+ 		caption: term.caption,
+ 		content: term.content,
+ 		user_id: term.user_id,
+ 	}
+ end
 
 json[:key_players] = @accepted_key_players.map do |kp|
 	{
@@ -105,7 +104,6 @@ json[:key_players] = @accepted_key_players.map do |kp|
 		content: kp.content,
 		user_id: kp.user_id,
 	}
-	
 end
 
 json[:links] = {
