@@ -1,6 +1,6 @@
  module Api::V1  
   class QuestionsController < ApiController
-    before_action :find_coin#, except: [:editor_images, :geteditor_images]
+    before_action :find_coin #, except: [:editor_images, :geteditor_images]
     before_action :find_ques_num, only: [:index]  
     # before_action :find_user
     # before_action :ensure_url_params, only:[:new]
@@ -173,7 +173,7 @@
       if question.valid? :activate
         if !question.accepted?
           question.accepted = true
-          question.pending = false
+          question.pending  = false
           question.rejected = false
           question.save!
         end
@@ -187,11 +187,10 @@
       question = Question.find(params[:id])
       if question.accepted?
         question.accepted = false
-        question.pending = false
+        question.pending  = false
         question.rejected = true
       end
       question.save
-      #redirect_to request.referrer
     end
 
    #  def upvote

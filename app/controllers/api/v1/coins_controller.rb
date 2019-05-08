@@ -6,7 +6,6 @@ module Api::V1
     #load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
     # before_action :authenticate_user!, except: [:index, :show]
-    before_action :get_submitted_picture, only: [:show, :create]
     before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
     # before_action :set_user
@@ -45,34 +44,32 @@ module Api::V1
     end
 
     def show
-      @coin = Coin.friendly.find(params[:id])
-
-      unless @coin.accepted or (current_user and current_user.admin?)
-        redirect_to coins_path
-        flash[:notice] = "Currency not found. Please choose from the following."
-      end
+      # unless @coin.accepted or (current_user and current_user.admin?)
+      #   redirect_to coins_path
+      #   flash[:notice] = "Currency not found. Please choose from the following."
+      # end
 
       # ------ Events ------- 
       @coin_events = @coin.events.order(:date)
       @pending_event_count = Event.pending_events.where("coin_id=?", @coin.id).count
 
-      @coin_events.each {
-          |e|
-          e.send('upvotes=', e.get_upvotes.size)
-          e.send('downvotes=', e.get_downvotes.size)
-      }
+      # @coin_events.each {
+      #     |e|
+      #     e.send('upvotes=', e.get_upvotes.size)
+      #     e.send('downvotes=', e.get_downvotes.size)
+      # }
        
       # ------ Links ------- 
-      @coin_exchanges                 = Link.where("exchange=? AND accepted=? AND coin_id=?", true, true, @coin.id).order('websitename ASC')
-      @other_links                    = Link.where("exchange=? AND accepted=? AND coin_id=?", false, true, @coin.id).order('websitename ASC')
+      @coin_exchanges                 = @coin.links.where("exchange=? AND accepted=?", true, true).order('websitename ASC')
+      @other_links                    = @coin.links.where("exchange=?", false)
       @pending_link_count             = Link.pending_links.where("coin_id=?", @coin.id).count
 
       # ------ Questions -------
-      @overview_accepted              = Question.where("coin_id=? and ques_num=? and accepted=?", @coin.id, 1, true)[0]
-      @history_accepted               = Question.where("coin_id=? and ques_num=? and accepted=?", @coin.id, 6, true)[0]
-      @govmodel_accepted              = Question.where("coin_id=? and ques_num=? and accepted=?", @coin.id, 7, true)[0]
-      @busmodel_accepted              = Question.where("coin_id=? and ques_num=? and accepted=?", @coin.id, 8, true)[0]
-      @usecases_accepted              = Question.where("coin_id=? and ques_num=? and accepted=?", @coin.id, 9, true)[0]      
+      @overview_accepted              = @coin.questions.where("ques_num=? and accepted=?", 1, true)[0]
+      @history_accepted               = @coin.questions.where("ques_num=? and accepted=?", 6, true)[0]
+      @govmodel_accepted              = @coin.questions.where("ques_num=? and accepted=?", 7, true)[0]
+      @busmodel_accepted              = @coin.questions.where("ques_num=? and accepted=?", 8, true)[0]
+      @usecases_accepted              = @coin.questions.where("ques_num=? and accepted=?", 9, true)[0]      
       @general_accepted = []
       @general_accepted << @overview_accepted
       @general_accepted << @history_accepted
@@ -106,6 +103,7 @@ module Api::V1
         @favorite_coins               = @coin.favorites.where("user_id=?", current_user.id)
       end 
 
+      get_submitted_picture #if !@coin.picture 
       populate_coin_data
     end
 
@@ -154,7 +152,6 @@ module Api::V1
 
     def flop
       # authorize! :destroy, @coin
-      # coin = Coin.find(params[:id])
       # coin.flop
 
       if coin.pending?
@@ -167,7 +164,6 @@ module Api::V1
         coin.rejected = true
       end
       coin.save
-      #redirect_to coin_path(coin)
     end
 
 
@@ -224,10 +220,8 @@ module Api::V1
         response = HTTParty.get("https://min-api.cryptocompare.com/data/pricemultifull?fsyms=#{coin_csv}&tsyms=USD&api_key=#{Rails.application.credentials.cryptocompare_api_key}")
         
         if response.values[0] != "Error"   
-          p "***** RESPONSE !ERROR"  
           @data = response['RAW']
           if @data
-            p "****** @DATA"
             @data.each do |cryptocompare_coin|
               if cryptocompare_coin[1]
                 if @coins
@@ -235,9 +229,7 @@ module Api::V1
                 else
                   byc_coin = @coin
                 end
-                p "******* BYC COIN: " + byc_coin.currency_name
                 byc_coin.price        = cryptocompare_coin[1]['USD']['PRICE']
-                p "****** PRICE " + byc_coin.price.to_s
                 byc_coin.market_cap   = cryptocompare_coin[1]['USD']['MKTCAP']
                 byc_coin.supply_24    = cryptocompare_coin[1]['USD']['SUPPLY']
                 byc_coin.volume_24    = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']
@@ -252,13 +244,9 @@ module Api::V1
       def get_submitted_picture
         cryptocompare_response = HTTParty.get("https://www.cryptocompare.com/api/data/coinlist/")
         if cryptocompare_response.present?
-          if cryptocompare_response['Data']
-            if @coin.currency_abbrev.present?
-              
-              if cryptocompare_response['Data'][@coin.currency_abbrev.upcase]
+          if cryptocompare_response['Data']      
+            if @coin.currency_abbrev.present? && cryptocompare_response['Data'][@coin.currency_abbrev.upcase] && cryptocompare_response['Data'][@coin.currency_abbrev.upcase].values[5].downcase == @coin.currency_name.downcase
                 @img_url_ = cryptocompare_response['BaseImageUrl'] + cryptocompare_response['Data'][@coin.currency_abbrev.upcase]['ImageUrl']
-              end
-
             end
           end
         end

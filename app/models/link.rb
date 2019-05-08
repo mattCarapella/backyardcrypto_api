@@ -4,7 +4,7 @@ class Link < ApplicationRecord
 	
 	validates :url, :format => URI::regexp(%w(http https))
 	validates :websitename, presence: true
-	validates :exchange, presence: true
+	#validates :exchange, presence: true
 	validate :add_url_protocol
 
 	scope :active_links,   -> { where(accepted: true) }

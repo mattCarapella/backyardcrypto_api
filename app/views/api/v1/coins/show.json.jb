@@ -11,7 +11,6 @@ json = {
 	moderator_id: @coin.moderator_id,
 	created_at: @coin.created_at,
 	updated_at: @coin.updated_at,
-	# permalink: @coin.permalink,
 	genre: @coin.genre,
 	coinmarket_id: @coin.coinmarket_id,
 	rejected: @coin.rejected,
@@ -20,15 +19,13 @@ json = {
 	accepted_at: @coin.accepted_at,
 	
 	#===================== BASIC INFO =====================
-	volume_usd: @coin.volume_usd,
-	volume_btc: @coin.volume_btc,
+
 	founder: @coin.founder,
 	country_of_origin: @coin.country_of_origin,
 	working_product: @coin.working_product,
 	mineable: @coin.mineable,
 	price: @coin.price,
 	supply: @coin.supply_24,
-	volume_usd: @coin.volume_24,
 	change: @coin.change_24,
 	market_cap: @coin.market_cap,
 	supply_24hr: @coin.supply_24,

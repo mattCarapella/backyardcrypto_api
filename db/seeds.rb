@@ -30,6 +30,8 @@ Coin.create!(currency_name: "FakeCoin", currency_abbrev: "FCK", founder: "Some D
 
 Coin.create!(currency_name: "pendingCoin", currency_abbrev: "PND", founder: "Some Dude", mineable: true, website: "https://fc.com/", reddit: "https://www.reddit.com/r/fc/", facebook: "https://www.facebook.com/fc/", twitter: "https://twitter.com/fc?lang=en", discord: "https://discord.me/page/fc", github: "https://github.com/fc", coinmarketcap: "https://coinmarketcap.com/currencies/fc/", slug: "pc", accepted: false, pending: true, rejected: false, coinmarket_id: 3, user_id: 1)
 
+#########################################################################################################
+
 Question.create!(ques_num: 1, id: 1, content:  "<p>Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. Overview sample DOGE. </p>\r\n", user_id: 1, coin_id: 2, accepted: true, pending: false, rejected: false)
 
 Question.create!(ques_num: 6, id: 2, content:  "<p>History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. History sample DOGE. </p>\r\n", user_id: 1, coin_id: 2, accepted: true, pending: false, rejected: false)
@@ -58,7 +60,7 @@ end
 end
 
 (1..30).to_a.each do |index|
-  link = Link.create(url: Faker::Internet.url, websitename: "TestExchange #{index}", tag: "website", description: Faker::Lorem.sentence(12), exchange: true, accepted: true, pending: false, rejected: false, coin_id: 2, user_id: 1) 
+  link = Link.create(url: Faker::Internet.url, websitename: "TestExchange #{index}", tag: "website", description: Faker::Lorem.sentence(12), exchange: false, accepted: true, pending: false, rejected: false, coin_id: 2, user_id: 1) 
 end
 
 (1..30).to_a.each do |index|
@@ -101,12 +103,7 @@ end
   post = Post.create(title: "Coin Post #{index}", content: Faker::Lorem.sentence(12), url: Faker::Internet.url, coin_id: 2, user_id: 1) 
 end
 
-(1..25).to_a.each do |index|
-  post = Post.create(title: "Whole Site Post #{index}", content: Faker::Lorem.sentence(12), url: Faker::Internet.url, coin_id: nil, user_id: 1) 
-end
-
-
-#########################################################################################
+#########################################################################################################
 
 Question.create!(ques_num: 6, id: 9, content:  "<p>History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. History sample BTC. </p>\r\n", user_id: 1, coin_id: 1, accepted: true, pending: false, rejected: false)
 
@@ -176,4 +173,12 @@ end
 (1..25).to_a.each do |index|
   post = Post.create(title: "Coin Post #{index}", content: Faker::Lorem.sentence(12), url: Faker::Internet.url, coin_id: 1, user_id: 1) 
 end
+
+#########################################################################################################
+
+(1..25).to_a.each do |index|
+  post = Post.create(title: "Whole Site Post #{index}", content: Faker::Lorem.sentence(12), url: Faker::Internet.url, coin_id: nil, user_id: 1) 
+end
+
+
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_01_194639) do
+ActiveRecord::Schema.define(version: 2019_05_08_222950) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -268,7 +268,7 @@ ActiveRecord::Schema.define(version: 2019_05_01_194639) do
     t.string "link_type"
     t.boolean "rejected", default: false
     t.boolean "pending", default: true
-    t.boolean "exchange", default: false
+    t.boolean "exchange"
     t.text "description"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_links_on_deleted_at"
