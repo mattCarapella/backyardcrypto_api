@@ -9,11 +9,11 @@ module Api::V1
   		# @events = Event.where(coin_id: @coin.id).order("created_at DESC")
       @events = @coin.events.order(:start_time)
       
-      @events.each {
-        |e|
-        e.send('upvotes=', e.get_upvotes.size)
-        e.send('downvotes=', e.get_downvotes.size)
-      }
+      # @events.each {
+      #   |e|
+      #   e.send('upvotes=', e.get_upvotes.size)
+      #   e.send('downvotes=', e.get_downvotes.size)
+      # }
 
       @coin_events = @coin.events.order(:date)
       @today = Date.current  

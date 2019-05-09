@@ -1,7 +1,7 @@
 class ApiController < ApplicationController
-	attr_reader :current_user
+	
 	before_action :set_default_format 
-	#before_action :authenticate_user! 
+	before_action :authenticate_user! 
 	#before_action :authenticate_token!
 
 	private 

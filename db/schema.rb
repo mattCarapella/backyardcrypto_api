@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_08_222950) do
+ActiveRecord::Schema.define(version: 2019_05_09_191035) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -404,9 +404,7 @@ ActiveRecord::Schema.define(version: 2019_05_08_222950) do
     t.string "youtube"
     t.string "personal_website"
     t.string "id_photo"
-    t.string "auth_token", default: ""
     t.string "authentication_token", limit: 30
-    t.index ["auth_token"], name: "index_users_on_auth_token", unique: true
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true

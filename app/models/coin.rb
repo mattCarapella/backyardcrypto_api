@@ -15,7 +15,7 @@ class Coin < ApplicationRecord
   has_many :notifications#, dependent: :destroy
  
   # belongs_to :user
-  belongs_to :moderator, class_name: "User" , :foreign_key => "moderator_id",  optional: true
+  #belongs_to :moderator, class_name: "User" , :foreign_key => "moderator_id",  optional: true
   
   has_and_belongs_to_many :genres
   
@@ -25,7 +25,7 @@ class Coin < ApplicationRecord
   # mount_uploader :picture, PictureUploader
   # validate :picture_size
 
-  attr_accessor :moderator_email
+  #attr_accessor :moderator_email
   attr_accessor :price, :market_cap, :volume_24, :supply_24, :change_24 # all of these are temporary storage for cryptocompare data
 
   # before_save do
@@ -64,14 +64,14 @@ class Coin < ApplicationRecord
     #   end
     # end
 
-    def self.check_moderator_email(moderator_email)
-       mod = User.where("email=?", moderator_email).first
-       if mod.present?
-          mod.update_attribute(:moderator, true) if not mod.moderator
-          return true
-       else
-          return false
-       end
-    end
+    # def self.check_moderator_email(moderator_email)
+    #    mod = User.where("email=?", moderator_email).first
+    #    if mod.present?
+    #       mod.update_attribute(:moderator, true) if not mod.moderator
+    #       return true
+    #    else
+    #       return false
+    #    end
+    # end
 
 end

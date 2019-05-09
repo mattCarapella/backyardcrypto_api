@@ -1,5 +1,5 @@
 class Question < ApplicationRecord
-	acts_as_votable
+	#acts_as_votable
 	#belongs_to :user
 	belongs_to :coin
   validate :approve_only_one, on: :activate

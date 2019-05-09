@@ -3,10 +3,12 @@ module Api::V1
 
   	def create
   		user = User.where(email: params[:email]).first
-
+      p "***** USER: " 
   		if user&.valid_password?(params[:password])
-  			render json: user.as_json(only: [:id, :email, :username, :authentication_token]), status: :created
+        p "^^^^ USER IS VALID"
+  			render json: user.as_json(only: [:email, :authentication_token]), status: :created
       else 
+        p "^^^^ USER IS *NOT* VALID"
   			head(:unauthorized)
   		end
   	end 

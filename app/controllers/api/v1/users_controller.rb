@@ -4,7 +4,6 @@ module Api::V1
     respond_to :json
 
   	def index
-      #byebug 
   		@users = User.order(params[:id])
   	end
 
@@ -22,7 +21,6 @@ module Api::V1
       if user.save
         render json: user, status: 201, location: [:api, user]
       else
-        p "DID NOT SAVE"
         render json: { errors: user.errors }, status: 422
       end
     end

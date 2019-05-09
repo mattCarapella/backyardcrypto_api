@@ -1,12 +1,12 @@
 class Post < ApplicationRecord
-	acts_as_votable
+	#acts_as_votable
 	validates :title, presence: true
 	validates :content, presence: true
 
-	belongs_to :user
+	#belongs_to :user
 	belongs_to :coin, optional: true
 	has_many :comments, as: :commentable, dependent: :destroy
-	has_many :users, through: :comments
+	#has_many :users, through: :comments
 	has_many :flags, dependent: :destroy
 	has_many :favorites 
 	

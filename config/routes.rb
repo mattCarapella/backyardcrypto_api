@@ -1,11 +1,9 @@
 Rails.application.routes.draw do
-  #devise_for :users
+  devise_for :users
 
  	namespace :api, defaults: { format: :json } do
     namespace :v1 do
     	
-    	# post :auth, to: "authentication#create"
-
       # resources :users, :only => [:show, :index, :create, :update, :destroy]
     	
       resources :sessions, :only => [:create, :destroy]

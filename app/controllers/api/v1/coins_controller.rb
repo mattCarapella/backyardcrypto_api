@@ -6,9 +6,12 @@ module Api::V1
     #load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
     # before_action :authenticate_user!, except: [:index, :show]
+
+    before_action :authenticate_user!
     before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
-    # before_action :set_user
+    
+    #before_action :set_user
     # before_action :get_localized_event_datetime, only: :show
 
     # rescue_from ActiveRecord::RecordNotFound do |exception|
@@ -23,6 +26,7 @@ module Api::V1
       # @coins = Coin.all.search(params[:currency_name])
       populate_coin_data if @coins.any?
       # @coins = @coins.sort_by(&:market_cap).reverse
+
     end
 
     def pending
