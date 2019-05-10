@@ -3,19 +3,19 @@ class Ability
 
   def initialize(user)
     
-    # user ||= User.new
+    user ||= User.new
 
     # alias_action :create, :read, to: :basic_action
 
-    # can :read, Coin, accepted: true
-    # can :read, Question, accepted: true
-    # can [:index, :calendar], Event   
-    # can :read, KeyPlayer, accepted: true
-    # can :index, KeyPlayer
-    # can :read, Term, accepted: true
-    # can :index, Term
-    # can [:read,:index], Post
-    # can [:index, :read], Genre
+    can :read, Coin, accepted: true
+    can :read, Question, accepted: true
+    can [:index, :calendar], Event   
+    can :read, KeyPlayer, accepted: true
+    can :index, KeyPlayer
+    can :read, Term, accepted: true
+    can :index, Term
+    can [:read,:index], Post
+    can [:index, :read], Genre
 
     # if user.present?
     #   can [:create], Coin

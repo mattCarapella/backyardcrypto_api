@@ -6,7 +6,7 @@ Rails.application.routes.draw do
     	
       # resources :users, :only => [:show, :index, :create, :update, :destroy]
     	
-      resources :sessions, :only => [:create, :destroy]
+      resource :sessions, :only => [:create, :destroy]
 
     	resources :coins do 	
         get 'pending', to: 'coins#pending', on: :collection

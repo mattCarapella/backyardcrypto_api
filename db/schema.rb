@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_09_191035) do
+ActiveRecord::Schema.define(version: 2019_05_10_205906) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -187,6 +187,7 @@ ActiveRecord::Schema.define(version: 2019_05_09_191035) do
     t.float "longitude"
     t.string "zipcode"
     t.datetime "deleted_at"
+    t.index ["coin_id"], name: "index_events_on_coin_id"
   end
 
   create_table "favorites", force: :cascade do |t|
@@ -271,6 +272,7 @@ ActiveRecord::Schema.define(version: 2019_05_09_191035) do
     t.boolean "exchange"
     t.text "description"
     t.datetime "deleted_at"
+    t.index ["coin_id"], name: "index_links_on_coin_id"
     t.index ["deleted_at"], name: "index_links_on_deleted_at"
   end
 
@@ -341,6 +343,7 @@ ActiveRecord::Schema.define(version: 2019_05_09_191035) do
     t.float "approval_rating", default: 0.0
     t.datetime "deleted_at"
     t.integer "citation_count", default: 0
+    t.index ["coin_id"], name: "index_questions_on_coin_id"
   end
 
   create_table "terms", force: :cascade do |t|

@@ -2,7 +2,7 @@ module Api::V1
   class KeyPlayersController < ApiController
     before_action :set_coin
     before_action :set_key_player, except: [:index, :new, :create]
-    #before_action :authenticate_user!, except: [:show, :index]
+    before_action :authenticate_user!, except: [:show, :index]
     load_and_authorize_resource
 
     def index

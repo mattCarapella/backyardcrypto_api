@@ -5,9 +5,8 @@ module Api::V1
     #load_and_authorize_resource param_method: :question_params    # CANCANCAN
     #load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
-    # before_action :authenticate_user!, except: [:index, :show]
-    #before_action :authenticate_user!
-    before_action :get_pending_term_and_kp_counts, only: [:show]
+    before_action :authenticate_user!#, except: [:index, :show]
+    #before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
     
     #before_action :set_user
@@ -20,7 +19,7 @@ module Api::V1
     # end
 
     def index
-
+      byebug
       @coins = Coin.active_coins
       # @coins = Coin.all.search(params[:currency_name])
       populate_coin_data if @coins.any?
@@ -53,7 +52,7 @@ module Api::V1
       # end
 
       # ------ Events ------- 
-      @coin_events = @coin.events.order(:date)
+      @coin_events = nil#@coin.events.order(:date)
       #@pending_event_count = Event.pending_events.where("coin_id=?", @coin.id).count
 
       # @coin_events.each {
@@ -68,17 +67,13 @@ module Api::V1
       #@pending_link_count             = Link.pending_links.where("coin_id=?", @coin.id).count
 
       # ------ Questions -------
-      @overview_accepted              = @coin.questions.where("ques_num=? and accepted=?", 1, true)[0]
-      @history_accepted               = @coin.questions.where("ques_num=? and accepted=?", 6, true)[0]
-      @govmodel_accepted              = @coin.questions.where("ques_num=? and accepted=?", 7, true)[0]
-      @busmodel_accepted              = @coin.questions.where("ques_num=? and accepted=?", 8, true)[0]
-      @usecases_accepted              = @coin.questions.where("ques_num=? and accepted=?", 9, true)[0]      
+      @accepted_questions = @coin.questions.where("accepted=?", true)          
       @general_accepted = []
-      @general_accepted << @overview_accepted
-      @general_accepted << @history_accepted
-      @general_accepted << @govmodel_accepted
-      @general_accepted << @busmodel_accepted
-      @general_accepted << @usecases_accepted
+      @general_accepted << @accepted_questions.where("ques_num=?", 1)[0]
+      @general_accepted << @accepted_questions.where("ques_num=?", 6)[0]
+      @general_accepted << @accepted_questions.where("ques_num=?", 7)[0]
+      @general_accepted << @accepted_questions.where("ques_num=?", 8)[0]
+      @general_accepted << @accepted_questions.where("ques_num=?", 9)[0] 
 
       # @pending_brief_overview_count   = @coin.questions.where('ques_num=? and pending=?', 1, true).count
       # @pending_history_count          = @coin.questions.where('ques_num=? and pending=?', 6, true).count
@@ -86,10 +81,7 @@ module Api::V1
       # @pending_busmodel_count         = @coin.questions.where('ques_num=? and pending=?', 8, true).count
       # @pending_comoutline_count       = @coin.questions.where('ques_num=? and pending=?', 9, true).count
       
-      # @open_topic_accepted            = Question.where("ques_num=? AND accepted=? AND coin_id=?",5, true, @coin.id).order("created_at ASC")
-      # @open_topic_submitted           = Question.where("ques_num=? AND pending=? AND coin_id=?", 5, true, @coin.id)
-     
-      @open_topic_all                 = @coin.questions.where("ques_num=?", 5)
+      @open_topic_all                             = @coin.questions.where("ques_num=?", 5)
       @open_topic_accepted, @open_topic_submitted = @open_topic_all.partition { |c| c.accepted? }
       @open_topic_pending, @open_topic_archived   = @open_topic_submitted.partition { |c| c.pending? }
 
@@ -105,8 +97,8 @@ module Api::V1
       if current_user
         @favorite_coins               = @coin.favorites.where("user_id=?", current_user.id)
       end 
-
-      get_submitted_picture #if !@coin.picture 
+ 
+      get_submitted_picture if !@coin.picture
       populate_coin_data
     end
 
@@ -237,7 +229,7 @@ module Api::V1
                 byc_coin.supply_24    = cryptocompare_coin[1]['USD']['SUPPLY']
                 byc_coin.volume_24    = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']
                 byc_coin.change_24    = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']
-                byc_coin.market_cap   = 0 if byc_coin.market_cap == nil     
+                #byc_coin.market_cap   = 0 if byc_coin.market_cap == nil     
               end       
             end     
           end
@@ -267,7 +259,7 @@ module Api::V1
       def get_submission_count
         @included_topics    = @coin.questions.where('ques_num=? AND accepted=?', 5, true).map(&:open_topic)
         @open_topics        = @coin.questions.where('ques_num=? and pending=?',  5, true).select { |a| @included_topics.exclude? (a.open_topic)}
-        @open_topic_count   = @coin.questions.where('ques_num=? and pending=?',  5, true).select { |a| @included_topics.exclude? (a.open_topic)}.count
+        #@open_topic_count   = @coin.questions.where('ques_num=? and pending=?',  5, true).select { |a| @included_topics.exclude? (a.open_topic)}.count
       end
 
       def get_pending_term_and_kp_counts

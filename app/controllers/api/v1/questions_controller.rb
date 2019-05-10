@@ -176,6 +176,19 @@
           question.pending  = false
           question.rejected = false
           question.save!
+
+          if question.ques_num == 1
+
+          elsif question.ques_num == 6
+            
+          elsif question.ques_num == 7
+
+          elsif question.ques_num == 8
+
+          elsif question.ques_num == 9
+
+          end
+
         end
       #else
         #flash[:notice] = "Sorry. There can only be one approved item."
