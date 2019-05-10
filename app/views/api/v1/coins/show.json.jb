@@ -11,12 +11,12 @@ json = {
 	moderator_id: @coin.moderator_id,
 	created_at: @coin.created_at,
 	updated_at: @coin.updated_at,
-	genre: @coin.genre,
+	# genre: @coin.genre,
 	coinmarket_id: @coin.coinmarket_id,
-	rejected: @coin.rejected,
-	pending: @coin.pending, 
-	accepted: @coin.accepted,
-	accepted_at: @coin.accepted_at,
+	# rejected: @coin.rejected,
+	# pending: @coin.pending, 
+	# accepted: @coin.accepted,
+	# accepted_at: @coin.accepted_at,
 	
 	#===================== BASIC INFO =====================
 
@@ -36,13 +36,13 @@ json = {
 	end_of_ico: @coin.end_of_ico,
 
 	#===================== PENDING COUNT INFO FOR ADMIN / ARCHIVE BUTTONS =====================
-	pending_brief_overview_count: @pending_brief_overview_count,
-  pending_history_count: @pending_history_count,
-	pending_govmodel_count: @pending_govmodel_count,
-	pending_busmodel_count:	@pending_busmodel_count,
-	pending_comoutline_count: @pending_comoutline_count,
-	pending_term_count: @pending_term_count,
-	pending_kp_count: @pending_kp_count,
+	# pending_brief_overview_count: @pending_brief_overview_count,
+  # pending_history_count: @pending_history_count,
+	# pending_govmodel_count: @pending_govmodel_count,
+	# pending_busmodel_count:	@pending_busmodel_count,
+	# pending_comoutline_count: @pending_comoutline_count,
+	# pending_term_count: @pending_term_count,
+	# pending_kp_count: @pending_kp_count,
 
 	picture: @coin.picture,
 	submitted_picture: @submitted_picture,
@@ -50,21 +50,10 @@ json = {
 }
 
 
-#json[:overview] = @general_accepted.map do |question|
-#	{
-#		id: question.id,
-#		ques_num: question.ques_num,
-#	  content: question.content,
-#	  user_id: question.user_id,
-#	  upvotes: question.upvotes,
-#	  downvotes: question.downvotes,
-#	  approval_rating: question.approval_rating,
-#	}
-#end
-
 json[:overview] = {
 	general_accepted: @general_accepted,
 }
+
 
 json[:indepth_analysis] = @open_topic_accepted.map do |question|
 	{

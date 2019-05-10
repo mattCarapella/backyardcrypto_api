@@ -1,7 +1,7 @@
 class Term < ApplicationRecord
 	extend FriendlyId
   friendly_id :title, use: [:slugged, :finders, :history]
-  #acts_as_votable
+  acts_as_votable
   belongs_to :coin
   #belongs_to :user
   validates :title, presence: true

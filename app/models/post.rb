@@ -1,5 +1,5 @@
 class Post < ApplicationRecord
-	#acts_as_votable
+	acts_as_votable
 	validates :title, presence: true
 	validates :content, presence: true
 

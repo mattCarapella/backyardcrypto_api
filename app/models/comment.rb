@@ -1,5 +1,5 @@
 class Comment < ApplicationRecord
-	#acts_as_votable
+	acts_as_votable
   validates :body, presence: true
 	
   #belongs_to :user 

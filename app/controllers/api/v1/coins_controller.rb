@@ -54,7 +54,7 @@ module Api::V1
 
       # ------ Events ------- 
       @coin_events = @coin.events.order(:date)
-      @pending_event_count = Event.pending_events.where("coin_id=?", @coin.id).count
+      #@pending_event_count = Event.pending_events.where("coin_id=?", @coin.id).count
 
       # @coin_events.each {
       #     |e|
@@ -65,7 +65,7 @@ module Api::V1
       # ------ Links ------- 
       @coin_exchanges                 = @coin.links.where("exchange=? AND accepted=?", true, true).order('websitename ASC')
       @other_links                    = @coin.links.where("exchange=?", false)
-      @pending_link_count             = Link.pending_links.where("coin_id=?", @coin.id).count
+      #@pending_link_count             = Link.pending_links.where("coin_id=?", @coin.id).count
 
       # ------ Questions -------
       @overview_accepted              = @coin.questions.where("ques_num=? and accepted=?", 1, true)[0]
@@ -80,14 +80,14 @@ module Api::V1
       @general_accepted << @busmodel_accepted
       @general_accepted << @usecases_accepted
 
-      @pending_brief_overview_count   = @coin.questions.where('ques_num=? and pending=?', 1, true).count
-      @pending_history_count          = @coin.questions.where('ques_num=? and pending=?', 6, true).count
-      @pending_govmodel_count         = @coin.questions.where('ques_num=? and pending=?', 7, true).count
-      @pending_busmodel_count         = @coin.questions.where('ques_num=? and pending=?', 8, true).count
-      @pending_comoutline_count       = @coin.questions.where('ques_num=? and pending=?', 9, true).count
+      # @pending_brief_overview_count   = @coin.questions.where('ques_num=? and pending=?', 1, true).count
+      # @pending_history_count          = @coin.questions.where('ques_num=? and pending=?', 6, true).count
+      # @pending_govmodel_count         = @coin.questions.where('ques_num=? and pending=?', 7, true).count
+      # @pending_busmodel_count         = @coin.questions.where('ques_num=? and pending=?', 8, true).count
+      # @pending_comoutline_count       = @coin.questions.where('ques_num=? and pending=?', 9, true).count
       
-      @open_topic_accepted            = Question.where("ques_num=? AND accepted=? AND coin_id=?",5, true, @coin.id).order("created_at ASC")
-      @open_topic_submitted           = Question.where("ques_num=? AND pending=? AND coin_id=?", 5, true, @coin.id)
+      # @open_topic_accepted            = Question.where("ques_num=? AND accepted=? AND coin_id=?",5, true, @coin.id).order("created_at ASC")
+      # @open_topic_submitted           = Question.where("ques_num=? AND pending=? AND coin_id=?", 5, true, @coin.id)
      
       @open_topic_all                 = @coin.questions.where("ques_num=?", 5)
       @open_topic_accepted, @open_topic_submitted = @open_topic_all.partition { |c| c.accepted? }
@@ -96,8 +96,8 @@ module Api::V1
       # ------ Key Players / Terms ------
       @accepted_terms                 = @coin.terms.where("accepted=?", true)
       @accepted_key_players           = @coin.key_players.where("accepted=?", true)
-      @pending_term_count             = Term.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.terms.any?
-      @pending_kp_count               = KeyPlayer.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.key_players.any?
+      # @pending_term_count             = Term.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.terms.any?
+      # @pending_kp_count               = KeyPlayer.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.key_players.any?
       
       # ------ Posts -------
       @community_posts                = Post.where("coin_id=?", @coin).first(10)
