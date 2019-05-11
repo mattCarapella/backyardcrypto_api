@@ -10,7 +10,7 @@ module Api::V1
         #render json: user, status: 201, location: [:api, user]
         render :create
       else
-        p "CREAET ERROR"
+        p "^^^^ CREAET ERROR"
         #render json: { errors: user.errors }, status: 422
       end
     end
@@ -18,7 +18,7 @@ module Api::V1
     private 
 
       def user_params
-        params.require(:user).permit(:email, :password, :password_confirmation)
+        params.require(:user).permit(:email, :password)
       end
 
   	# def index

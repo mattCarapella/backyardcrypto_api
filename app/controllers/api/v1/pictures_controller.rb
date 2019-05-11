@@ -1,9 +1,9 @@
 module Api::V1    
   class PicturesController < ApiController
-    load_and_authorize_resource
+    # load_and_authorize_resource
   	before_action :set_coin 
-  	before_action :set_user
-   # before_action :find_pictures
+  	# before_action :set_user
+    # before_action :find_pictures
 
     def index
       #authorize! :index, @picture
@@ -17,19 +17,25 @@ module Api::V1
     end
 
     def new
-      @picture = current_user.pictures.build
+      #@picture = current_user.pictures.build
     end
 
   	def create
       #authorize! :create, @picture
-      params[:picture][:accepted] = false
-  	  @picture = current_user.pictures.build(picture_params)
-  	  @picture.coin = @coin
+     #  params[:picture][:accepted] = false
+  	  # @picture = current_user.pictures.build(picture_params)
+  	  # @picture.coin = @coin
+
   	  # if @picture.save!
   	  #   redirect_to coin_path(@coin.id)
   	  # else
   	  #   render 'new'
   	  # end
+
+      @picture = Picture.new 
+      if @picture.save 
+        render json: @picture, status: :created
+      end
   	end
 
     def edit
@@ -87,8 +93,8 @@ module Api::V1
         @coin = Coin.friendly.find(params[:coin_id])
       end
 
-      def set_user
-        @user = current_user
-      end
+      # def set_user
+      #   @user = current_user
+      # end
   end
 end

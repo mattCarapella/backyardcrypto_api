@@ -92,7 +92,9 @@ Rails.application.routes.draw do
             get :deactivate
           end
           get 'challenge', to: 'terms#challenge', on: :member
-        end  	
+        end 
+
+        resources :pictures, only: [:index] 	
       end
     	
       resources :genres

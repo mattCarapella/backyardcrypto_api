@@ -2,8 +2,8 @@ class Picture < ApplicationRecord
   belongs_to :coin
   #belongs_to :user
   # mount_uploader :image, CoinImageUploader
-  validate :picture_size
-  validate :approve_only_one, on: :activate
+  # validate :picture_size
+  # validate :approve_only_one, on: :activate
 
   private 
 

@@ -17,7 +17,7 @@ Genre.create!(name: "social", displayname: "Social")
 Genre.create!(name: "dividends", displayname: "Dividends")
 Genre.create!(name: "computing_and_data", displayname: "Computing & Data")
 
-User.create!({username: "AdminUser", id: 1, email: "admin@backyardcrypto.com", password: "password", password_confirmation: "password", terms_of_service: true, admin: true})
+#User.create!({username: "AdminUser", id: 1, email: "admin@backyardcrypto.com", password: "password", password_confirmation: "password", terms_of_service: true, admin: true})
 #User.create!({username: "ModUser", email: "moderator@backyardcrypto.com", password: "password", password_confirmation: "password", terms_of_service: true, moderator: true})
 #User.create!({username: "User", email: "user@backyardcrypto.com", password: "password", password_confirmation: "password", terms_of_service: true})
 
