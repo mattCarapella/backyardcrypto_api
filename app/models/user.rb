@@ -13,11 +13,11 @@ class User < ApplicationRecord
   has_many :pictures, dependent: :destroy
   has_many :terms, dependent: :destroy
   has_many :key_players, dependent: :destroy
+  has_many :moderated_coins, class_name: "Coin", :foreign_key => "moderator_id"
 
-  # # has_many :question_images, dependent: :destroy
-  
+  # has_many :question_images, dependent: :destroy
   # has_many :citations
-  # has_many :moderated_coins, class_name: "Coin", :foreign_key => "moderator_id"
+
   # # has_many :editor_files
   # # has_many :favorites
   # # has_many :comments, as: :commentable

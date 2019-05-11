@@ -15,7 +15,7 @@ class Coin < ApplicationRecord
   has_many :notifications#, dependent: :destroy
  
   # belongs_to :user
-  #belongs_to :moderator, class_name: "User" , :foreign_key => "moderator_id",  optional: true
+  belongs_to :moderator, class_name: "User" , :foreign_key => "moderator_id",  optional: true
   
   has_and_belongs_to_many :genres
   
