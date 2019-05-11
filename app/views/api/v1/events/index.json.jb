@@ -1,33 +1,6 @@
-@events.map do |event|
-	{
-	  content: event.content,
-	  date: event.date, 
-	  coin_id: event.coin_id, 
-	  user_id: event.user_id,
-	  accepted: event.accepted,
-	  upvotes: event.upvotes,
-	  downvotes: event.downvotes,
-	  created_at: event.created_at,
-	  updated_at: event.updated_at,
-	  link: event.link,
-	  picture: event.picture,
-	  time: event.time,
-	  city: event.city,
-	  state: event.state,
-	  country: event.country,
-	  description: event.description,
-	  rejected: event.rejected,
-	  pending: event.pending,
-	  start_time: event.start_time,
-	  end_time: event.end_time,
-	  venue: event.venue,
-	  street_address: event.street_address,
-	  latitude: event.latitude,
-	  longitude: event.longitude,
-	  zipcode: event.zipcode,
-	  deleted_at: event.deleted_at,
-
-		upcoming_events: @upcoming_events,
-		past_events: @past_events
-	}
-end
+json = {
+	past_events: @past_events,
+	upcoming_events: @upcoming_events,
+	pending_events: @pending_events,
+	inactive_events: @rejected
+}

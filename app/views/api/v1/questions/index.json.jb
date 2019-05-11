@@ -12,3 +12,4 @@ json = {
 	open_topics: @open_topics,
 	open_topic_count: @open_topic_count,
 }
+

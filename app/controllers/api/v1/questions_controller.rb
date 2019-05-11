@@ -11,9 +11,13 @@
 
     def index
       @sort_by = params[:sort_by] ? params[:sort_by] : 'approval'
+      
       if params[:ques_num].blank?
+        p "***** PARAMS[:ID] NOT FOUND"
         @questions = Question.where(coin_id: @coin.id).order("created_at DESC")
+      
       else 
+        p "PARAMS[:ID] FOUND *****"
         if params[:id]
           @question = Question.find(params[:id])
           @topic = @question.open_topic
