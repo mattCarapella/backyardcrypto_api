@@ -13,30 +13,34 @@
       @sort_by = params[:sort_by] ? params[:sort_by] : 'approval'
       
       if params[:ques_num].blank?
-        p "***** PARAMS[:ID] NOT FOUND"
         @questions = Question.where(coin_id: @coin.id).order("created_at DESC")
-      
       else 
-        p "PARAMS[:ID] FOUND *****"
         if params[:id]
           @question = Question.find(params[:id])
           @topic = @question.open_topic
           @questions = Question.where(coin_id: @coin.id, ques_num: @num, open_topic: @topic)
-        else
-          @questions = Question.where(ques_num: @num, coin_id: @coin.id)
+        # else
+        #   @questions = Question.where(ques_num: @num, coin_id: @coin.id)
         end
-        @inactive_count = @questions.where('ques_num=? and rejected=?', params[:ques_num], true).count
-        @pending_count = @questions.where('ques_num=? and pending=?', params[:ques_num], true).count
-        @accepted = @questions.where("ques_num=? AND accepted=?", params[:ques_num], true)
-        @pending = Question.where("coin_id=? AND ques_num=? AND pending=?", @coin.id, params[:ques_num], true).order("created_at ASC")
-        if @sort_by == 'approval'
-          @rejected = @questions.where("ques_num=? AND rejected=?", params[:ques_num], true).order("approval_rating DESC")
-        elsif @sort_by == 'created_at'
-          @rejected = @questions.where("ques_num=? AND rejected=?", params[:ques_num], true).order("created_at ASC")
+
+        # @inactive_count = @questions.where('ques_num=? and rejected=?', params[:ques_num], true).count
+        # @pending_count = @questions.where('ques_num=? and pending=?', params[:ques_num], true).count
+        
+        @accepted = @coin.questions.where("ques_num=? AND accepted=?", params[:ques_num], true)
+        @pending = @coin.questions.where("ques_num=? AND pending=?", params[:ques_num], true)
+        @rejected = @coin.questions.where("ques_num=? AND rejected=?", params[:ques_num], true)
+
+        # if @sort_by == 'approval'
+        #   @rejected = @questions.where("ques_num=? AND rejected=?", params[:ques_num], true).order("approval_rating DESC")
+        # elsif @sort_by == 'created_at'
+        #   @rejected = @questions.where("ques_num=? AND rejected=?", params[:ques_num], true).order("created_at ASC")
+        # end
+      
+        if params[:ques_num] == 5 
+          @included_topics = @coin.questions.where("ques_num=? AND accepted=?", 5, true).map(&:open_topic)
+          @open_topics = @coin.questions.where('ques_num=? and pending=?', 5, true).select { |a| @included_topics.exclude? (a.open_topic)}
+          @open_topic_count = @open_topics.count
         end
-        @included_topics = @coin.questions.where("ques_num=? AND accepted=?", 5, true).map(&:open_topic)
-        @open_topics = @coin.questions.where('ques_num=? and pending=?', 5, true).select { |a| @included_topics.exclude? (a.open_topic)}
-        @open_topic_count = @coin.questions.where('ques_num=? and pending=?', 5, true).select { |a| @included_topics.exclude? (a.open_topic)}.count
       end
     end
 
