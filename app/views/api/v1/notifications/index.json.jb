@@ -1,0 +1,7 @@
+json = {
+	data: {
+		notifications: {
+			notifications: @notifications 
+		}
+	} 
+}

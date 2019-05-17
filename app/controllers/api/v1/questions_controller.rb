@@ -47,6 +47,7 @@
       @approval_rating = (@upvotes/@total_votes*100).round(2)
       @comments        = @question.comments.all
       @comments        = @question.comments.where(parent_id: nil)
+      @flags           = @question.flags.all
 
       @comments.each do |c|
         c.send('upvotes=', c.get_upvotes.size)

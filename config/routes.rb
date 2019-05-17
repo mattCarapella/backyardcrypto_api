@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     	
       resource :sessions, :only => [:show, :create, :destroy]
 
+##########################################################################################
     	resources :coins do 	
         get 'pending', to: 'coins#pending', on: :collection
   
@@ -42,13 +43,16 @@ Rails.application.routes.draw do
           resources :flags
           resources :comments, module: :posts
           resource :favorite
+
+
           member do
-              get :flop
-          get "getlikes", to: "posts#getupvotes"
-          get "getdislikes", to: "posts#getdownvotes"
+            get :flop
+            get "getlikes", to: "posts#getupvotes"
+            get "getdislikes", to: "posts#getdownvotes"
             put "like", to: "posts#upvote"
             put "dislike", to: "posts#downvote"
           end
+
         end
 
         resources :questions do
@@ -96,6 +100,8 @@ Rails.application.routes.draw do
 
         resources :pictures 	
       end
+
+##########################################################################################
     	
       resources :genres
 
@@ -107,7 +113,7 @@ Rails.application.routes.draw do
         get 'challenge', to: 'key_players#challenge', on: :member
       end
 
-      resources :posts do
+      resources :posts do#, :path => "community" do
         resource :favorite, module: :posts
         member do
           get "getlikes", to: "posts#getupvotes"
@@ -130,8 +136,9 @@ Rails.application.routes.draw do
         member do
           put "like", to: "posts#upvote"
           put "dislike", to: "posts#downvote"
+          # get :flop
         end
-      end
+      end      
       
       resources :terms do
         member do
@@ -141,8 +148,13 @@ Rails.application.routes.draw do
         get 'challenge', to: 'terms#challenge', on: :member
       end
 
-      
+      resources :notifications do
+        collection do
+          post :mark_as_read
+        end
+      end
 
+      
     end
   end
 

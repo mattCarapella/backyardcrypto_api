@@ -1,0 +1,7 @@
+json = {
+	data: {
+		comments: {
+			comments: @comments
+		}
+	}
+}

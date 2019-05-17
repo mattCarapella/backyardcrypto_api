@@ -6,27 +6,23 @@ module Api::V1
     def index
       @comments = @commentable.comments.all
       render json: {likes: @comments}
-      # @comments.each {
-      #     |c|
-      #     c.send('upvotes=', c.get_upvotes.size)
-      #     c.send('downvotes=', c.get_downvotes.size)
-      # }
+      @comments.each do |c|
+        c.send('upvotes=', c.get_upvotes.size)
+        c.send('downvotes=', c.get_downvotes.size)
+      end
     end
 
     def create
       @comment = @commentable.comments.new(comment_params)
-      #@comment.user = current_user
-
+      # @comment.user = current_user
       if @comment.parent.present?
       	recipient = @comment.parent.user
       else
       	recipient = @comment.commentable.user
       end
-
       if params[:coin_id]
         @comment.coin = Coin.find(params[:coin_id])
       end
-
       if @comment.save
       	if @comment.commentable and @comment.parent.present?
   				#Notification.create(recipient: @comment.parent.user, actor: current_user, action: "replied", notifiable: @comment)
@@ -49,7 +45,7 @@ module Api::V1
     	@comment = Comment.find(params[:id])
       if @comment.update(comment_params)
         @comment.edited = true
-        @comment.save
+        @comment.save!
       end
       render json: {comment: @comment}
     end
@@ -57,7 +53,6 @@ module Api::V1
     def destroy
   #  	@comment = Comment.find(params[:id])
   #   @comment.destroy
-  #   redirect_to request.referrer
   		@comment = @commentable.comments.find(params[:id])
   		@comment.deleted = true
   		@comment.save
