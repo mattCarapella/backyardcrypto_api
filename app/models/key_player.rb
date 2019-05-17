@@ -1,22 +1,22 @@
 class KeyPlayer < ApplicationRecord
 	extend FriendlyId
   friendly_id :title, use: [:slugged, :finders, :history]
-  #acts_as_votable
+  acts_as_votable
+  
   belongs_to :coin
-  #belongs_to :user
+  belongs_to :user
+  
   validates :title, presence: true
   validates :caption, presence: true
   validates :content, presence: true
-  #validate :approve_only_one, on: :activate
+  validate :approve_only_one, on: :activate
   
-  scope :active_kp,   -> { where(active: true) }
-  scope :inactive_kp, -> { where(rejected: true) }
-  scope :pending_kp,  -> { where(pending: true) }
+  enum active_status: [:pending, :active, :inactive]
 
   private 
 
 		def approve_only_one	
-			accepted_answers = KeyPlayer.where(title: self.title, accepted: true)
+			accepted_answers = KeyPlayer.where('title=? AND coin_id=? AND active_status=?', self.title, self.coin_id, 1)
 			unless accepted_answers.count < 1 
 				errors.add :base, 'There can only be one accepted answer'
 			end

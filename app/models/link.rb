@@ -1,15 +1,12 @@
 class Link < ApplicationRecord
-	# belongs_to :user
+	belongs_to :user
 	belongs_to :coin
 	
 	validates :url, :format => URI::regexp(%w(http https))
 	validates :websitename, presence: true
-	#validates :exchange, presence: true
-	validate :add_url_protocol
+	validate  :add_url_protocol
 
-	scope :active_links,   -> { where(accepted: true) }
-	scope :inactive_links, -> { where(rejected: true) }
-	scope :pending_links,  -> { where(pending: true) }
+	enum link_type:[:exchange, :website]
 
 	def add_url_protocol
 	  if self.url && !url_protocol_present?

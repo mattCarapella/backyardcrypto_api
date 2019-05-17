@@ -1,6 +1,7 @@
 json = {
 	past_events: @past_events,
 	upcoming_events: @upcoming_events,
+	active_events: @accepted_events,
 	pending_events: @pending_events,
-	inactive_events: @rejected
+	inactive_events: @rejected_events
 }

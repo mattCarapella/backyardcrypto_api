@@ -4,9 +4,8 @@ class Event < ApplicationRecord
   belongs_to :user
   belongs_to :coin
 
-  scope :active_events,   -> { where(accepted: true) }
-  scope :inactive_events, -> { where(rejected: true) }
-  scope :pending_events,  -> { where(pending: true) }
+  enum active_status: [:pending, :active, :inactive]
+  
   scope :later_events, Proc.new { |current = DateTime.now, limit = 7| where('date > ?', current).order("date ASC").limit(limit) }
   scope :prior_events, Proc.new { |current = DateTime.now, limit = 3| where('date < ?', current).order("date DESC").limit(limit) }
 

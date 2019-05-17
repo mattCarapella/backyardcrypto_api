@@ -1,18 +1,30 @@
 module Api::V1  
   class UsersController < ApiController
    
-    respond_to :json
+    #respond_to :json
 
     def create
       @user = User.new(user_params)
       if @user.save
-        p "**** USER CREATED"
         #render json: user, status: 201, location: [:api, user]
-        render :create
+        render :create, status: :created, locals: { user: @user }
       else
-        p "^^^^ CREAET ERROR"
         #render json: { errors: user.errors }, status: 422
       end
+    end
+
+    def index
+      @users = User.all
+    end
+
+    def show
+      @user = User.find(params[:id])
+      @user_questions = @user.questions 
+      @user_terms = @user.terms 
+      @user_keyplayers = @user.key_players
+      @user_links = @user.links
+      @user_events = @user.events
+      #@user_favorites = @user.favorites
     end
    
     private 

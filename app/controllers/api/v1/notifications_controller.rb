@@ -5,7 +5,7 @@ module Api::V1
 
 		def index
 			@notifications = Notification.where(recipient: current_user).recent
-			# render json: {notifications: @notifications}
+			render json: {notifications: @notifications}
 		end
 
 		def mark_as_read

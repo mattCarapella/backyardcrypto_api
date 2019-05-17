@@ -1,3 +1,5 @@
-json = {	
-	users: @users
+json = {
+	data: {		
+		users: @users
+	}
 }

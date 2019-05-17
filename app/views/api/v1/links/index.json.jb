@@ -1,8 +1,11 @@
 json = {
-	links: @links,
 	accepted_links: @accepted_links,
+	pending_links:  @pending_links,
+	inactive_links: @inactive_links,
+  active_count:		@accepted_count,
   inactive_count: @inactive_count,
-  pending_count: @pending_count
+  pending_count:  @pending_count
+
 }
 
 json

@@ -17,6 +17,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw] 		# Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rspec-rails', '~> 3.8', '>= 3.8.2'
 	gem 'faker', '~> 1.9', '>= 1.9.3'
+	gem 'pry', '~> 0.12.2'
 end
 
 group :development do
@@ -30,8 +31,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby] 				# Windows
 
 gem 'devise', '~> 4.6', '>= 4.6.2'
 gem 'simple_token_authentication', '~> 1.0'
-
-# gem 'jwt', '~> 2.1'
+gem 'jwt', '~> 2.1'
 gem 'rack-cors', '~> 1.0', '>= 1.0.3'
 gem 'httparty', '~> 0.16.4'
 gem 'recaptcha', '~> 4.13', '>= 4.13.1'

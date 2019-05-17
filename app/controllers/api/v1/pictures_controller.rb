@@ -7,32 +7,28 @@ module Api::V1
 
     def index
       #authorize! :index, @picture
-      @pictures = @coin.pictures
-      @accepted, @pending = @pictures.partition(&:accepted)
+      #@accepted, @pending = @coin.pictures.partition(&:accepted)
+      @pending  = @coin.pictures.where("active_status=?", 0) 
+      @accepted = @coin.pictures.where("active_status=?", 1) 
+      @inactive = @coin.pictures.where("active_status=?", 2) 
       @main_pic = @accepted.first
     end
 
   	def show
     	#authorize! :read, @picture
+      @picture = Picture.find(params[:id])
     end
 
     def new
       #@picture = current_user.pictures.build
+      @picture = Picture.new(picture_params)
     end
 
   	def create
-      #authorize! :create, @picture
-     #  params[:picture][:accepted] = false
-  	  # @picture = current_user.pictures.build(picture_params)
-  	  # @picture.coin = @coin
-
-  	  # if @picture.save!
-  	  #   redirect_to coin_path(@coin.id)
-  	  # else
-  	  #   render 'new'
-  	  # end
-
-      @picture = Picture.new 
+      # authorize! :create, @picture
+      #@picture = current_user.pictures.build(picture_params)
+      @picture = Picture.new(picture_params)
+      @picture.coin = @coin
       if @picture.save 
         render json: @picture, status: :created
       end
@@ -46,37 +42,28 @@ module Api::V1
 
     def destroy
     	#authorize! :destroy, @picture
+      @picture = Picture.find(params[:id]) 
       @picture.destroy
-      #redirect_to coin_path(@coin.id)
     end
 
     def activate
       #authorize! :update, @picture
       picture = Picture.find(params[:id])
       if picture.valid? :activate
-        if !picture.accepted?
-          picture.accepted = true
-          picture.pending = false
-          picture.rejected = false
-          picture.save
-          #redirect_to request.referrer
+        if picture.active_status == 0 or picture.active_status == 2
+          picture.active_status = 1
+          picture.save!
         end
-      else 
-        flash[:notice] = "Sorry. There can only be one approved picture."
-        #redirect_to request.referrer
       end   
     end
 
     def deactivate
       #authorize! :update, @picture
       picture = Picture.find(params[:id])    
-      if picture.accepted?
-        picture.accepted = false
-        picture.pending = true
-        picture.rejected = false
-      end
-      picture.save
-      #redirect_to request.referrer
+      if picture.active_status == 0 or picture.active_status == 1
+        picture.active_status == 2
+        picture.save!
+      end      
     end
 
   	private 
@@ -86,7 +73,7 @@ module Api::V1
       end
 
       def picture_params
-        params.require(:picture).permit(:image, :description, :accepted, :pending, :rejected)
+        params.require(:picture).permit(:image, :description, :accepted, :pending, :rejected, :active_status)
       end
 
   		def set_coin

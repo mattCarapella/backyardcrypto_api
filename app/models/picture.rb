@@ -1,9 +1,11 @@
 class Picture < ApplicationRecord
-  belongs_to :coin
-  #belongs_to :user
   # mount_uploader :image, CoinImageUploader
-  # validate :picture_size
-  # validate :approve_only_one, on: :activate
+  
+  belongs_to :coin
+  belongs_to :user
+  
+  validate :picture_size
+  validate :approve_only_one, on: :activate
 
   private 
 
@@ -14,7 +16,7 @@ class Picture < ApplicationRecord
     end
 
     def approve_only_one
-      accepted_pictures = Picture.where(coin_id: self.coin.id, accepted: true)
+      accepted_pictures = Picture.where(coin_id: self.coin.id, active_status: 1)
       unless accepted_pictures.count < 1 
         errors.add :base, 'There can only be one accepted answer'
       end

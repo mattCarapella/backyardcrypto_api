@@ -1,7 +1,7 @@
 module Api::V1   
   class CommentsController < ApiController
-    #before_action :authenticate_user!
-  	load_and_authorize_resource
+    # before_action :authenticate_user!
+  	# load_and_authorize_resource
 
     def index
       @comments = @commentable.comments.all
@@ -15,7 +15,7 @@ module Api::V1
 
     def create
       @comment = @commentable.comments.new(comment_params)
-      @comment.user = current_user
+      #@comment.user = current_user
 
       if @comment.parent.present?
       	recipient = @comment.parent.user
@@ -29,10 +29,9 @@ module Api::V1
 
       if @comment.save
       	if @comment.commentable and @comment.parent.present?
-  				Notification.create(recipient: @comment.parent.user, actor: current_user, action: "replied",
-  														notifiable: @comment)
+  				#Notification.create(recipient: @comment.parent.user, actor: current_user, action: "replied", notifiable: @comment)
   			end
-          render json: {comment: @comment}
+        render json: {comment: @comment}
       	# respond_to do |format|
       	# 	if params[:coin_id]
   	    # 		format.html { redirect_to [@commentable.coin, @commentable] }
@@ -42,11 +41,7 @@ module Api::V1
       	# 	format.js {}
       	# end
       else
-      	if params[:coin_id]
-      		redirect_to [@commentable.coin, @commentable], alert: "An error occured while posting your comment."
-      	else
-      		redirect_to @commentable, alert: "An error occured while posting your comment."
-      	end
+      	render json: @comment.errors, status: :unprocessable_entity
       end
     end
 
@@ -56,8 +51,7 @@ module Api::V1
         @comment.edited = true
         @comment.save
       end
-
-       render json: {comment: @comment}
+      render json: {comment: @comment}
     end
 
     def destroy
@@ -67,7 +61,6 @@ module Api::V1
   		@comment = @commentable.comments.find(params[:id])
   		@comment.deleted = true
   		@comment.save
-  		# redirect_to request.referrer
     end
 
     def upvote

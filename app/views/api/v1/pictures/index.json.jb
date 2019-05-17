@@ -1,3 +1,6 @@
 json = {
-	pictures: @pictures
+	
+	accepted: @accepted,
+	pending: @pending,
+	primary_pic: @main_pic
 }

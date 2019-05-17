@@ -1,9 +1,13 @@
 json = {
-	user: @user,
-	upvotes_questions: @upvoted_questions,
-	downvoted_questions: @downvoted_questions,
-	upvoted_events: @upvoted_events,
-	downvoted_events: @downvoted_events,
+	data: {
+		user: {
+			user: @user,
+			user_questions: @user.questions ,
+      user_terms: @user.terms,
+      user_keyplayers: @user.key_players,
+      user_links: @user.links,
+      user_events: @user.events,
+      #user_favorites: @user.favorites
+    }
+	}
 }
-
-json

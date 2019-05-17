@@ -1,8 +1,8 @@
 module Api::V1 
   class PostsController < ApiController
     before_action :set_coin, except: [:index]
-  	#before_action :authenticate_user!, except: [:index, :show]
-  	load_and_authorize_resource
+  	# before_action :authenticate_user!, except: [:index, :show]
+  	# load_and_authorize_resource
 
     def index
   	  if params[:coin_id]
@@ -11,9 +11,9 @@ module Api::V1
   	    if params[:sort] == "Popular"
           @sorted_by = "popular"
   	      @posts = Post.where(coin_id: @coin.id)
-  	  #       .left_joins(:comments)
-  	  #       .group(:id)
-  	  #       .order('COUNT(comments.id) ASC')
+  	        .left_joins(:comments)
+  	        .group(:id)
+  	        .order('COUNT(comments.id) ASC')
   	    else
           @sorted_by = "created_at"
   	      @posts = Post.where(coin_id: @coin.id).order("created_at DESC")
@@ -22,11 +22,11 @@ module Api::V1
         @path = "general" 
     		@posts = Post.where(coin_id: nil)
     	end
-     #  @posts.each {
-     #      |p|
-     #      p.send('upvotes=', p.get_upvotes.size)
-     #      p.send('downvotes=', p.get_downvotes.size)
-     #  }
+      @posts.each {
+          |p|
+          p.send('upvotes=', p.get_upvotes.size)
+          p.send('downvotes=', p.get_downvotes.size)
+      }
     end
 
     def show
@@ -51,36 +51,8 @@ module Api::V1
       @coin = Coin.find(params[:coin_id]) if params[:coin_id]
     end
 
-  	# def create
-  	# 	if params[:coin_id]
-  	# 		@coin = Coin.find(params[:coin_id])
-
-  	# 	  #@post = current_user.posts.build(post_params)
-  	# 	  #@post.user = current_user
-   #      @post = Post.new
-   #      @post.coin = @coin
-
-  	# 	  if @post.save
-  	# 	    render json: @post, status: :created
-  	# 	  else
-  	# 	    render json: @post.errors, status: :unprocessable_entity
-  	# 	  end
-  	# 	else
-  	# 		# @post = current_user.posts.build(post_params)
-   #  		#  @post.user = current_user
-
-   #      @post = Post.new
-  	# 	  if @post.save
-  	# 	    render json: @post, status: :created
-  	# 	  else
-  	# 	    render json: @post.errors, status: :unprocessable_entity
-  	# 	  end
-  	# 	end
-  	# end
-
-
     def create
-      @post = Post.new
+      @post = Post.new(post_params)
       if params[:coin_id]
         @coin = Coin.find(params[:coin_id])
         @post.coin = @coin
@@ -100,28 +72,21 @@ module Api::V1
    		@coin = Coin.find(params[:coin_id]) if params[:coin_id]
       if @post.update(post_params)
         @post.edited = true
-        @post.save
-        if params[:coin_id]
-  	      redirect_to coin_post_path(@coin.id, @post.id)
+        if @post.save!
+  	      render json: @post, status: :ok
   			else
-  				redirect_to post_path(@post.id)
+  				render json: @post.errors, status: :unprocessable_entity
   			end
-      else
-        redirect_to 'edit'
       end
     end
 
     def destroy
+      @post = Post.find(params[:id])
       @post.destroy
-      if params[:coin_id]
-  	    redirect_to coin_posts_path(@coin.id)
-    	else
-    		redirect_to posts_path
-    	end
     end
 
     def delete
-      @post = Post.find(params[:id] )
+      @post = Post.find(params[:id])
       @post.destroy
     end
 

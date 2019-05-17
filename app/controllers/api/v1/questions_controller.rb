@@ -10,35 +10,31 @@
     # load_and_authorize_resource
 
     def index
-      @sort_by = params[:sort_by] ? params[:sort_by] : 'approval'
-      
+      @sort_by = params[:sort_by] ? params[:sort_by] : 'approval'    
       if params[:ques_num].blank?
-        @questions = Question.where(coin_id: @coin.id).order("created_at DESC")
+        # Archive for all coin questions (.../coins/bitcoin/questions)
+        @pending =  @coin.questions.where("active_status=?", 0)
+        @accepted = @coin.questions.where("active_status=?", 1)
+        @inactive = @coin.questions.where("active_status=?", 2)
       else 
-        if params[:id]
-          @question = Question.find(params[:id])
-          @topic = @question.open_topic
-          @questions = Question.where(coin_id: @coin.id, ques_num: @num, open_topic: @topic)
-        # else
-        #   @questions = Question.where(ques_num: @num, coin_id: @coin.id)
+        if params[:id] && params[:ques_num] == '5'
+          # Archive for open topic questions (.../coins/bitcoin/questions?id=29&ques_num=5)
+          num = params[:ques_num]
+          question = Question.find(params[:id])
+          topic = question.open_topic
+          @pending  = @coin.questions.where("ques_num=? AND open_topic=? AND active_status=?", 5, topic, 0)
+          @accepted = @coin.questions.where("ques_num=? AND open_topic=? AND active_status=?", 5, topic, 1)
+          @rejected = @coin.questions.where("ques_num=? AND open_topic=? AND active_status=?", 5, topic, 2)
+        else
+          # Archive for specific questions (.../coins/bitcoin/questions?ques_num=2)
+          num = params[:ques_num]
+          @pending  = @coin.questions.where("ques_num=? AND active_status=?", num, 0)
+          @accepted = @coin.questions.where("ques_num=? AND active_status=?", num, 1)
+          @rejected = @coin.questions.where("ques_num=? AND active_status=?", num, 2)
         end
-
-        # @inactive_count = @questions.where('ques_num=? and rejected=?', params[:ques_num], true).count
-        # @pending_count = @questions.where('ques_num=? and pending=?', params[:ques_num], true).count
-        
-        @accepted = @coin.questions.where("ques_num=? AND accepted=?", params[:ques_num], true)
-        @pending = @coin.questions.where("ques_num=? AND pending=?", params[:ques_num], true)
-        @rejected = @coin.questions.where("ques_num=? AND rejected=?", params[:ques_num], true)
-
-        # if @sort_by == 'approval'
-        #   @rejected = @questions.where("ques_num=? AND rejected=?", params[:ques_num], true).order("approval_rating DESC")
-        # elsif @sort_by == 'created_at'
-        #   @rejected = @questions.where("ques_num=? AND rejected=?", params[:ques_num], true).order("created_at ASC")
-        # end
-      
-        if params[:ques_num] == 5 
-          @included_topics = @coin.questions.where("ques_num=? AND accepted=?", 5, true).map(&:open_topic)
-          @open_topics = @coin.questions.where('ques_num=? and pending=?', 5, true).select { |a| @included_topics.exclude? (a.open_topic)}
+        if params[:ques_num] == '5' 
+          @included_topics =  @coin.questions.where("ques_num=? AND active_status=?", 5, 1).map(&:open_topic)
+          @open_topics =      @coin.questions.where('ques_num=? AND active_status=?', 5, 0).select { |a| @included_topics.exclude? (a.open_topic)}
           @open_topic_count = @open_topics.count
         end
       end
@@ -50,6 +46,7 @@
       @downvotes = @question.get_downvotes.size
       @total_votes = Float(@upvotes + @downvotes)
       @approval_rating = (@upvotes/@total_votes*100).round(2)
+      @comments = @question.comments.all
       # @comments = @question.comments.where(parent_id: nil)
       # @comments.each {
       #     |c|
@@ -57,7 +54,7 @@
       #     c.send('downvotes=', c.get_downvotes.size)
       # }
       # @main_page_images = @question.question_images.where("accepted=?", true).first(8)
-      # @citations = @question.citations.all.order("source_num ASC")
+      @citations = @question.citations.all
       @question.send('upvotes=', @question.get_upvotes.size)
       @question.send('downvotes=', @question.get_downvotes.size)
     end
@@ -102,25 +99,19 @@
    #   end
     end
 
-   #  def update
-   #    if @question.update(question_params)
-   #      if @question.ques_num == 2 or @question.ques_num ==3
-   #        flash[:notice] = "Your edit has been recorded."
-   #        redirect_to coin_question_path(@coin, @question.id)
-   #      else
-   #        flash[:notice] = "Your edit has been recorded."
-   #        redirect_to coin_path(@coin)
-   #      end
-   #    else
-   #      redirect_to 'edit'
-   #    end
-   #  end
+    def update
+      @question = Question.find(params[:id])
+      if @question.update(question_params)
+        render json: @question, status: :ok   
+      else
+        render json: @question.errors, status: :unprocessable_entity   
+      end
+    end
 
-   #  def destroy
-   #    @question.destroy
-   #    redirect_to @coin
-   #    flash[:notice] = "Submission deleted."
-   #  end
+    def destroy
+      @question = Question.find(params[:id])
+      @question.destroy
+    end
 
    #  def geteditor_images
    #    @host = request.protocol+request.host_with_port
@@ -165,53 +156,31 @@
 
     def challenge
       #:authenticate_user!
-    	 if @question.ques_num == 5
+      @question = Question.find(params[:id])
+    	if @question.ques_num == 5
   			old_topic = @question.open_topic
-  			@submissions = Question.where(coin_id: @coin.id, ques_num: 5, open_topic: old_topic, accepted: false)
+  			@submissions = @coin.questions.where("ques_num=? AND open_topic=? AND active_status=?", 5, old_topic, 2)
     	end
     end
-
-   #  def archive
-   #    @archived = Question.where("coin_id=?", @coin.id).only_deleted.order("created_at ASC")
-   #  end
 
     def activate
       #authorize! :update, @question
       question = Question.find(params[:id])
       if question.valid? :activate
-        if !question.accepted?
-          question.accepted = true
-          question.pending  = false
-          question.rejected = false
+        if question.active_status == 0 or question.active_status == 2
+          question.active_status = 1
           question.save!
-
-          if question.ques_num == 1
-
-          elsif question.ques_num == 6
-            
-          elsif question.ques_num == 7
-
-          elsif question.ques_num == 8
-
-          elsif question.ques_num == 9
-
-          end
-
         end
-      #else
-        #flash[:notice] = "Sorry. There can only be one approved item."
       end
     end
 
     def deactivate
       #authorize! :update, @question
       question = Question.find(params[:id])
-      if question.accepted?
-        question.accepted = false
-        question.pending  = false
-        question.rejected = true
-      end
-      question.save
+      if question.active_status == 0 or question.active_status == 1
+        question.active_status = 2
+        question.save
+      end   
     end
 
    #  def upvote
@@ -252,7 +221,8 @@
     private
 
       def question_params
-        params.require(:question).permit(:content, :ques_num, :coin_id, :accepted, :term, :description, :caption, :image, :image_caption, :open_topic, :slug, :flagged)
+        params.require(:question).permit(:content, :ques_num, :coin_id, :accepted, :term, :description, :caption, 
+            :image, :image_caption, :open_topic, :slug, :flagged, :active_status)
       end
 
     	def find_ques_num

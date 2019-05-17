@@ -1,17 +1,16 @@
-class Question < ApplicationRecord
+class Question < ApplicationRecord	
 	acts_as_votable
-	#belongs_to :user
+
+	belongs_to :user
 	belongs_to :coin
-  validate :approve_only_one, on: :activate
+	
 	has_many :citations
-	# has_many :question_images, dependent: :destroy
 	has_many :comments, as: :commentable, dependent: :destroy
 	has_many :flags, dependent: :destroy
-
-	scope :is_accepted, -> { where(accepted: true) }
-	scope :is_inactive, -> { where(rejected: true) }
-	scope :is_pending,  -> { where(pending: true) }
-
+	
+	validate :approve_only_one, on: :activate
+	
+	enum active_status: [:pending, :active, :inactive]
 	
 	def get_approval_rating
 		total_upvotes = self.get_upvotes.size
@@ -25,12 +24,12 @@ class Question < ApplicationRecord
 		def approve_only_one
 			if self.ques_num == 1 or self.ques_num == 6 or self.ques_num == 7 or 
 						self.ques_num == 8 or self.ques_num == 9
-				accepted_answers = Question.where(coin_id: self.coin.id, ques_num: self.ques_num, accepted: true)
+				accepted_answers = Question.where(coin_id: self.coin.id, ques_num: self.ques_num, active_status: 1)
 				unless accepted_answers.count < 1 
 					errors.add :base, 'There can only be one accepted answer'
 				end
 			elsif self.ques_num == 5 
-				accepted_answers = Question.where(coin_id: self.coin.id, ques_num: self.ques_num, open_topic: self.open_topic, accepted: true)
+				accepted_answers = Question.where(coin_id: self.coin.id, ques_num: self.ques_num, open_topic: self.open_topic, active_status: 1)
 				unless accepted_answers.count < 1 
 					errors.add :base, 'There can only be one accepted answer'
 				end

@@ -1,5 +1,10 @@
 json = {
-	user: @user,
-	email: @user.email,
-	authentication_token: @user.authentication_token 
+	data: {	
+		user: { 
+			user: @user,
+			email: @user.email,
+		},
+		token: token
+	}
 }
+

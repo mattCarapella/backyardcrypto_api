@@ -1,9 +1,6 @@
 class Coin < ApplicationRecord
   extend FriendlyId
   friendly_id :currency_name, use: [:slugged, :history, :finders]  
-  scope :active_coins,   -> { where(accepted: true) }
-  scope :inactive_coins, -> { where(accepted: false) }
-  scope :pending_coins,  -> { where(pending: true) }
 
   has_many :questions, dependent: :destroy
   has_many :events, dependent: :destroy
@@ -14,7 +11,7 @@ class Coin < ApplicationRecord
   has_many :favorites
   has_many :notifications#, dependent: :destroy
  
-  # belongs_to :user
+  belongs_to :user
   belongs_to :moderator, class_name: "User" , :foreign_key => "moderator_id",  optional: true
   
   has_and_belongs_to_many :genres
@@ -25,7 +22,7 @@ class Coin < ApplicationRecord
   # mount_uploader :picture, PictureUploader
   # validate :picture_size
 
-  #attr_accessor :moderator_email
+  attr_accessor :moderator_email
   attr_accessor :price, :market_cap, :volume_24, :supply_24, :change_24 # all of these are temporary storage for cryptocompare data
 
   # before_save do
@@ -34,22 +31,12 @@ class Coin < ApplicationRecord
   #   end
   # end
 
+  enum active_status: [:pending, :active, :inactive]
+
   def self.search(search)
     coins = all.where('accepted = ?', true).order('id ASC')
     coins = coins.where("currency_name like ? AND accepted = ?", "%#{search.capitalize}%", true) if search
     coins
-  end
-
-
-  def flop
-    self.accepted = !self.accepted
-    if self.accepted?
-      self.pending = false
-      self.rejected = false
-    elsif !self.accepted?
-      self.pending = true
-    end
-    self.save
   end
 
 	def should_generate_new_friendly_id?

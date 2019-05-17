@@ -1,51 +1,51 @@
 module Api::V1 
   class TermsController < ApiController  
-    before_action :authenticate_user!, except: [:index]
+    before_action :set_term, except: [:index, :create, :new]
     before_action :set_coin 
-    #load_and_authorize_resource
+    before_action :authenticate_user!, except: [:index]
+    load_and_authorize_resource
 
-    def index
-      
-      if params[:term].blank?  
-      
-
-      # All terms archive
+    def index      
+      if params[:term].blank?   
         if params[:coin_id]
-          # Coin specific terminology index pages
+          # Coin specific Term archive (.../coins/bitcoin/terms)
           @path = "coin"
-          @accepted = Term.where("coin_id=? AND accepted=?", @coin.id, true).order("title ASC")        
-          @pending  = Term.where("coin_id=? AND pending=?", @coin.id, true).order("title ASC")
-          @pending2 = []
-          @rejected = Term.where("coin_id=? AND rejected=?", @coin.id, true).order("title ASC")
+          @pending  = @coin.terms.where("active_status=?", 0).order("title ASC")        
+          @accepted = @coin.terms.where("active_status=?", 1).order("title ASC")
+          @rejected = @coin.terms.where("active_status=?", 2).order("title ASC")        
         else
-          # Whole site terminology index page
+          # Whole site Term archive (.../terms)
           @path = "general"
-          @accepted = Term.where("accepted=?", true).order("title ASC")
-          @pending  = Term.pending.order("title ASC")
-          @rejected = Term.where("rejected=?", true).order("title ASC")      
+          @pending  = Term.where("active_status=?", 0).order("title ASC")        
+          @accepted = Term.where("active_status=?", 1).order("title ASC")
+          @rejected = Term.where("active_status=?", 2).order("title ASC")    
         end  
-
-        # Remove duplicates from @pending index if there is an approved term with the same name
         if @accepted.any? && @pending.any?  
+          # Remove duplicates from @pending index if there is an approved term with the same name
           accepted_terms_titles = @accepted.map { |t| t[:title] } 
           @pending = @pending.reject { |t| accepted_terms_titles.include?(t[:title]) }
         end 
-      
       else 
-      # Individual term index pages
-        @term_title = params[:term]
-        @accepted   = Term.where("title=? AND accepted=?", @term_title, true).order("title ASC")
-        @pending    = Term.where("title=? AND pending=?", @term_title, true).order("title ASC")
-        @rejected   = Term.where("title=? AND rejected=?", @term_title, true).order("title ASC")
+        if params[:coin_id]  
+          # Specific Term archive - Coin (.../coins/bitcoin/terms?term=Decentralization)
+          @term_title = params[:term]
+          @pending    = @coin.terms.where("title=? AND active_status=?", @term_title, 0).order("title ASC")
+          @accepted   = @coin.terms.where("title=? AND active_status=?", @term_title, 1).order("title ASC")        
+          @rejected   = @coin.terms.where("title=? AND active_status=?", @term_title, 2).order("title ASC")
+        else
+          # Specific Term archive - General (.../terms?term=Decentralization)
+          @term_title = params[:term]
+          @pending    = Term.where("title=? AND active_status=?", @term_title, 0).order("title ASC")
+          @accepted   = Term.where("title=? AND active_status=?", @term_title, 1).order("title ASC")        
+          @rejected   = Term.where("title=? AND active_status=?", @term_title, 2).order("title ASC") 
+        end
       end
-
-      @active_count   = @accepted.count if @accepted
-      @inactive_count = @rejected.count if @rejected
-      @pending_count  = @pending.count if @pending
+      @active_count   = @accepted.length if @accepted
+      @inactive_count = @rejected.length if @rejected
+      @pending_count  = @pending.length  if @pending
     end
 
     def show
-      @term = Term.friendly.find(params[:id])
       @upvotes = @term.get_upvotes.size
       @downvotes = @term.get_downvotes.size
       @total_votes = Float(@upvotes + @downvotes)
@@ -57,7 +57,7 @@ module Api::V1
     end
 
     def create
-      #@term = current_user.terms.build(term_params)
+      # @term = current_user.terms.build(term_params)
       @term = Term.new(term_params)
       @term.coin = @coin
 
@@ -83,51 +83,32 @@ module Api::V1
 
     def update
       # authorize! :update, @term
-      @term = Term.friendly.find(params[:id])
-      if @term.update(term_params)
-        # flash[:notice] = "Your edit has been recorded."
-        if params[:coin_id]
-          @coin = Coin.friendly.find(params[:coin_id]) 
-          # redirect_to coin_term_path(@term.coin, @term)     
-        else 
-          # redirect_to terms_path
-        end
+      if @term.update(term_params)        
+        render json: @term, status: :ok       
       else
-        redirect_to 'edit'
+        render json: @term.errors, status: :unprocessable_entity
       end
     end
 
     def destroy
-      # @term = Term.friendly.find(params[:id])
-      @term = Term.find(params[:id])
       @term.destroy
-      # redirect_to request.referrer
-      # flash[:notice] = "Submission deleted."
     end
 
     def activate
       # authorize! :update, @term
-      term = Term.find(params[:id])
-      if term.valid? :activate 
-        term.accepted = true
-        term.pending = false
-        term.rejected = false
-        term.save
-        # redirect_to request.referrer
+      if @term.valid? :activate 
+        @term.active_status = 1
+        @term.save
+        render json: @term, status: :ok  
       else 
-        # flash[:notice] = "Sorry. There can only be one approved item."
-        # redirect_to request.referrer
+        render json: @term.errors, status: :unprocessable_entity  
       end   
     end
 
     def deactivate
       # authorize! :update, @term
-      term = Term.find(params[:id])   
-      term.accepted = false
-      term.pending = false
-      term.rejected = true
-      term.save!
-      # redirect_to request.referrer
+      @term.active_status = 2
+      @term.save!
     end
 
     def challenge 
@@ -139,7 +120,7 @@ module Api::V1
 
       def term_params
         params.require(:term).permit(:title, :caption, :content, :accepted, :pending, :rejected, :image,
-          :image_caption, :slug, :upvotes, :downvotes, :approval_rating, :coin_id)
+          :image_caption, :slug, :upvotes, :downvotes, :approval_rating, :coin_id, :active_status)
       end
 
       def set_coin    

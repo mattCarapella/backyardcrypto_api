@@ -1,5 +1,6 @@
 json = {
+	data: {
 		id: @user.id,
 		email: @user.email
-
+	}
 }

@@ -1,15 +1,13 @@
 module Api::V1  
   class CoinsController < ApiController
-    require "csv"
+    require "csv" 
 
     #load_and_authorize_resource param_method: :question_params    # CANCANCAN
     #load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
-    # before_action :authenticate_user!, except: [:index, :show]
-    #before_action :get_pending_term_and_kp_counts, only: [:show]
+    #before_action :authenticate_user!#, except: [:index, :show]
+    before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
-    
-    # before_action :set_user
     # before_action :get_localized_event_datetime, only: :show
 
     # rescue_from ActiveRecord::RecordNotFound do |exception|
@@ -19,16 +17,13 @@ module Api::V1
     # end
 
     def index
-      #yebug
-      @coins = Coin.active_coins
+      @coins = Coin.where("active_status=?", 1)
       # @coins = Coin.all.search(params[:currency_name])
       populate_coin_data if @coins.any?
-      # @coins = @coins.sort_by(&:market_cap).reverse
-
     end
 
     def pending
-      @pending_coins = Coin.pending_coins
+      @pending_coins = Coin.where("active_status=?", 0)
     end
 
     def new
@@ -46,15 +41,8 @@ module Api::V1
     end
 
     def show
-      # unless @coin.accepted or (current_user and current_user.admin?)
-      #   redirect_to coins_path
-      #   flash[:notice] = "Currency not found. Please choose from the following."
-      # end
-
       # ------ Events ------- 
-      @coin_events = nil#@coin.events.order(:date)
-      #@pending_event_count = Event.pending_events.where("coin_id=?", @coin.id).count
-
+      @coin_events = @coin.events.where("active_status=?", 1)
       # @coin_events.each {
       #     |e|
       #     e.send('upvotes=', e.get_upvotes.size)
@@ -62,34 +50,22 @@ module Api::V1
       # }
        
       # ------ Links ------- 
-      @coin_exchanges                 = @coin.links.where("exchange=? AND accepted=?", true, true).order('websitename ASC')
-      @other_links                    = @coin.links.where("exchange=?", false)
-      #@pending_link_count             = Link.pending_links.where("coin_id=?", @coin.id).count
+      @coin_exchanges                 = @coin.links.where("exchange=? AND active_status=?", true, 1).order('websitename ASC')
+      @other_links                    = @coin.links.where("exchange=? AND active_status=?", false, 1)
 
       # ------ Questions -------
-      @accepted_questions = @coin.questions.where("accepted=?", true)          
+      @accepted_questions = @coin.questions.where("active_status=?", 1)          
       @general_accepted = []
       @general_accepted << @accepted_questions.where("ques_num=?", 1)[0]
       @general_accepted << @accepted_questions.where("ques_num=?", 6)[0]
       @general_accepted << @accepted_questions.where("ques_num=?", 7)[0]
       @general_accepted << @accepted_questions.where("ques_num=?", 8)[0]
       @general_accepted << @accepted_questions.where("ques_num=?", 9)[0] 
-
-      # @pending_brief_overview_count   = @coin.questions.where('ques_num=? and pending=?', 1, true).count
-      # @pending_history_count          = @coin.questions.where('ques_num=? and pending=?', 6, true).count
-      # @pending_govmodel_count         = @coin.questions.where('ques_num=? and pending=?', 7, true).count
-      # @pending_busmodel_count         = @coin.questions.where('ques_num=? and pending=?', 8, true).count
-      # @pending_comoutline_count       = @coin.questions.where('ques_num=? and pending=?', 9, true).count
-      
-      @open_topic_all                             = @coin.questions.where("ques_num=?", 5)
-      @open_topic_accepted, @open_topic_submitted = @open_topic_all.partition { |c| c.accepted? }
-      @open_topic_pending, @open_topic_archived   = @open_topic_submitted.partition { |c| c.pending? }
+      @open_topic_accepted = @coin.questions.where("ques_num=? AND active_status=?", 5, 1)
 
       # ------ Key Players / Terms ------
-      @accepted_terms                 = @coin.terms.where("accepted=?", true)
-      @accepted_key_players           = @coin.key_players.where("accepted=?", true)
-      # @pending_term_count             = Term.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.terms.any?
-      # @pending_kp_count               = KeyPlayer.where("coin_id=? AND pending=?", @coin.id, true).count if @coin.key_players.any?
+      @accepted_terms                 = @coin.terms.where("active_status=?", 1)
+      @accepted_key_players           = @coin.key_players.where("active_status=?", 1)
       
       # ------ Posts -------
       @community_posts                = Post.where("coin_id=?", @coin).first(10)
@@ -106,7 +82,6 @@ module Api::V1
       if params[:q].present?
         @question = Question.find_by_id(params[:q])
         @num = @question.ques_num
-
         if @question.present?
           authorize! :update, @coin
         else
@@ -119,7 +94,7 @@ module Api::V1
 
     def update
       if @coin.save! && @coin.update_attributes(coin_params)
-        render json: @coin
+        render json: @coin, status: :ok
       else
         render json: @coin.errors, status: :unprocessable_entity
       end
@@ -137,48 +112,41 @@ module Api::V1
     end
 
     def destroy
-      @coin = Coin.find(params[:id])
+      @coin = Coin.friendly.find(params[:id])
       # if current_user.admin?
-      #   @coin.destroy
+        @coin.destroy
       # end
-      # render json: { status: 'SUCCESS', message: 'deleted the coin', data: @coin }
-      @coin.destroy
     end
 
     def flop
       # authorize! :destroy, @coin
-      # coin.flop
-
-      if coin.pending?
-        coin.accepted = true
-        coin.pending = false
-        coin.rejected = false
-      elsif coin.accepted?
-        coin.accepted = false
-        coin.pending = false
-        coin.rejected = true
+      @coin = Coin.friendly.find(params[:id])
+      if @coin.active_status == 0 or @coin.active_status == 2
+        @coin.active_status = 1
+      elsif @coin.active_status == 0 or @coin.active_status == 1
+        @coin.active_status = 2
       end
-      coin.save
+      @coin.save
     end
-
 
     private
 
       def coin_params
         if current_user.try(:admin?)
-          params.require(:coin).permit(:moderator_email, :moderator_id, :currency_name, :currency_abbrev, :working_product, :founder,
-            :mineable, :date_of_ico, :end_of_ico, :website, :reddit, :slack, :app, :github, :tradingview, :bitcointalk,
-            :stackexchange, :coinmarketcap, :gitter, :blockexplorer, :tradingview, :bitcointalk,
-            :bitfinex, :bithumb, :bitflyer, :hitbtc, :kucoin, :poloniex, :bitstamp, :bittrex,
-            :gdax, :gemini, :btcc, :kraken, :korbit, :binance, :yorbit, :okcoin, :accepted, :picture,
-            :coinmarket_id,:link_name, :money_raised_in_ico, :facebook, :twitter, :youtube, :whitepaper, :discord, :rank, genre_ids:[])
+          params.require(:coin).permit(:moderator_email, :moderator_id, :currency_name, :currency_abbrev, :working_product, 
+            :founder, :mineable, :date_of_ico, :end_of_ico, :website, :reddit, :slack, :app, :github, :tradingview, 
+            :bitcointalk, :stackexchange, :coinmarketcap, :gitter, :blockexplorer, :tradingview, :bitcointalk,
+            :bitfinex, :bithumb, :bitflyer, :hitbtc, :kucoin, :poloniex, :bitstamp, :bittrex, :gdax, :gemini, :btcc, 
+            :kraken, :korbit, :binance, :yorbit, :okcoin, :accepted, :picture, :coinmarket_id,:link_name, 
+            :money_raised_in_ico, :facebook, :twitter, :youtube, :whitepaper, :discord, :rank, :active_status, genre_ids:[])
         else
-          params.require(:coin).permit( :currency_name, :currency_abbrev, :working_product, :founder,
+          params.require(:coin).permit(:currency_name, :currency_abbrev, :working_product, :founder,
             :mineable, :date_of_ico, :end_of_ico, :website, :reddit, :slack, :app, :github, :tradingview, :bitcointalk,
             :stackexchange, :coinmarketcap, :gitter, :blockexplorer, :tradingview, :bitcointalk,
             :stackexchange, :bitfinex, :bithumb, :bitflyer, :hitbtc, :kucoin, :poloniex, :bitstamp, :bittrex,
             :gdax, :gemini, :btcc, :kraken, :korbit, :binance, :yorbit, :okcoin, :accepted, :picture,
-            :coinmarket_id,:link_name, :money_raised_in_ico, :facebook, :twitter, :youtube, :whitepaper, :discord,:moderator_id, :rank, genre_ids:[])
+            :coinmarket_id,:link_name, :money_raised_in_ico, :facebook, :twitter, :youtube, :whitepaper, :discord, 
+            :moderator_id, :rank, :active_status, genre_ids:[])
         end
       end
 
@@ -190,10 +158,6 @@ module Api::V1
         @coins = Coin.order("rank ASC")
         @coins = @coins.search(params[:currency_name]).paginate(:page => params[:page], :per_page => 100)
         render json: {coins: @coins}
-      end
-
-      def set_user
-        @user = current_user
       end
 
       # def get_public_ip_address
@@ -211,9 +175,7 @@ module Api::V1
         else
           coin_csv = @coin.currency_abbrev
         end
-
-        response = HTTParty.get("https://min-api.cryptocompare.com/data/pricemultifull?fsyms=#{coin_csv}&tsyms=USD&api_key=#{Rails.application.credentials.cryptocompare_api_key}")
-        
+        response = HTTParty.get("https://min-api.cryptocompare.com/data/pricemultifull?fsyms=#{coin_csv}&tsyms=USD&api_key=#{Rails.application.credentials.cryptocompare_api_key}") 
         if response.values[0] != "Error"   
           @data = response['RAW']
           if @data
@@ -228,8 +190,7 @@ module Api::V1
                 byc_coin.market_cap   = cryptocompare_coin[1]['USD']['MKTCAP']
                 byc_coin.supply_24    = cryptocompare_coin[1]['USD']['SUPPLY']
                 byc_coin.volume_24    = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']
-                byc_coin.change_24    = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']
-                #byc_coin.market_cap   = 0 if byc_coin.market_cap == nil     
+                byc_coin.change_24    = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']   
               end       
             end     
           end
@@ -245,7 +206,7 @@ module Api::V1
             end
           end
         end
-        @found = Picture.find_by(coin_id: @coin.id, accepted: true)
+        @found = Picture.find_by(coin_id: @coin.id, active_status: 1)
         if @found
           @submitted_picture = @found.image.url
         elsif @img_url_
@@ -257,25 +218,24 @@ module Api::V1
       end
 
       def get_submission_count
-        @included_topics    = @coin.questions.where('ques_num=? AND accepted=?', 5, true).map(&:open_topic)
-        @open_topics        = @coin.questions.where('ques_num=? and pending=?',  5, true).select { |a| @included_topics.exclude? (a.open_topic)}
-        #@open_topic_count   = @coin.questions.where('ques_num=? and pending=?',  5, true).select { |a| @included_topics.exclude? (a.open_topic)}.count
+        @included_topics  = @coin.questions.where('ques_num=? AND active_status=?', 5, 1).map(&:open_topic)
+        @open_topics      = @coin.questions.where('ques_num=? and active_status=?', 5, 0).select { |a| @included_topics.exclude? (a.open_topic)}
+        @open_topic_count = @open_topics.size
       end
 
       def get_pending_term_and_kp_counts
-        @pending_kp   = KeyPlayer.where("coin_id=? AND pending=?", @coin.id, true)
-        @pending_term = Term.where("coin_id=? AND pending=?", @coin.id, true)
-
+        @pending_kp   = @coin.key_players.where("active_status=?", 0)
+        @pending_term = @coin.terms.where("active_status=?", 0)
         if @pending_kp.any?
-          @accepted_kp_titles = KeyPlayer.where("coin_id=? AND accepted=?", @coin.id, true).map { |t| t[:title] }
+          @accepted_kp_titles = @coin.key_players.where("active_status=?", 1).map { |t| t[:title] }
           @pending_kp = @pending_kp.reject { |t| @accepted_kp_titles.include?(t[:title]) }
         end
         if @pending_term.any?
-          @accepted_term_titles = Term.where("coin_id=? AND accepted=?", @coin.id, true).map { |t| t[:title] }
+          @accepted_term_titles = @coin.terms.where("active_status=?", 1).map { |t| t[:title] }
           @pending_term = @pending_term.reject { |t| @accepted_term_titles.include?(t[:title]) }
         end
-        @new_pending_terms_count = @pending_term.count
-        @new_pending_kps_count = @pending_kp.count
+        @new_pending_terms_count = @pending_term.size
+        @new_pending_kps_count = @pending_kp.size
       end
 
   end

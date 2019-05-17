@@ -10,51 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_10_205906) do
+ActiveRecord::Schema.define(version: 2019_05_17_041758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "citations", force: :cascade do |t|
     t.bigint "question_id"
-    t.string "author1_lname"
-    t.string "author1_fname"
-    t.string "author2_lname"
-    t.string "author2_fname"
-    t.string "author3_lname"
-    t.string "author3_fname"
-    t.string "author4_lname"
-    t.string "author4_fname"
-    t.string "author5_lname"
-    t.string "author5_fname"
-    t.string "author6_lname"
-    t.string "author6_fname"
+    t.string "title"
+    t.string "author1"
+    t.string "author2"
+    t.string "author3"
+    t.string "author4"
+    t.string "author5"
+    t.string "publisher"
     t.date "date_of_last_revision"
     t.date "date_of_publication"
     t.date "date_of_retrieval"
+    t.string "url"
+    t.string "isbn"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "source_num"
-    t.string "title"
-    t.string "url"
-    t.string "website_name"
-    t.string "archive_url"
-    t.date "archive_date"
-    t.string "language"
-    t.string "format"
-    t.string "work"
-    t.string "agency"
-    t.string "issue"
-    t.string "publisher"
-    t.string "isbn"
-    t.string "pages"
-    t.string "edition"
-    t.string "journal"
-    t.string "volume"
-    t.string "doi"
-    t.string "pmid"
-    t.date "access_date"
     t.index ["question_id"], name: "index_citations_on_question_id"
   end
 
@@ -65,6 +43,11 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.float "volume_usd"
     t.float "volume_btc"
     t.string "picture"
+    t.text "question1"
+    t.text "question2"
+    t.text "question3"
+    t.text "question4"
+    t.text "question5"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "permalink"
@@ -115,6 +98,11 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.integer "genre_id"
     t.integer "user_id"
     t.integer "coinmarket_id"
+    t.text "question6"
+    t.text "question7"
+    t.text "question8"
+    t.text "question9"
+    t.text "question10"
     t.string "slug"
     t.boolean "rejected", default: false
     t.boolean "pending", default: true
@@ -128,6 +116,8 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.decimal "percent_change_24h"
     t.decimal "percent_change_7d"
     t.date "end_of_ico"
+    t.integer "active_status", default: 0
+    t.index ["active_status"], name: "index_coins_on_active_status"
     t.index ["slug"], name: "index_coins_on_slug", unique: true
   end
 
@@ -152,12 +142,19 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.boolean "edited", default: false
     t.bigint "coin_id"
     t.datetime "deleted_at"
-    t.integer "depth", default: 0
+    t.integer "grandparent_id"
     t.index ["coin_id"], name: "index_comments_on_coin_id"
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
     t.index ["deleted_at"], name: "index_comments_on_deleted_at"
     t.index ["post_id"], name: "index_comments_on_post_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "editor_files", force: :cascade do |t|
+    t.string "file"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "events", force: :cascade do |t|
@@ -187,7 +184,9 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.float "longitude"
     t.string "zipcode"
     t.datetime "deleted_at"
-    t.index ["coin_id"], name: "index_events_on_coin_id"
+    t.integer "active_status", default: 0
+    t.index ["active_status"], name: "index_events_on_active_status"
+    t.index ["deleted_at"], name: "index_events_on_deleted_at"
   end
 
   create_table "favorites", force: :cascade do |t|
@@ -214,7 +213,7 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.index ["user_id"], name: "index_flags_on_user_id"
   end
 
-  create_table "friendly_id_slugs", force: :cascade do |t|
+  create_table "friendly_id_slugs", id: :serial, force: :cascade do |t|
     t.string "slug", null: false
     t.integer "sluggable_id", null: false
     t.string "sluggable_type", limit: 50
@@ -222,7 +221,8 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.datetime "created_at"
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
-    t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+    t.index ["sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_id"
+    t.index ["sluggable_type"], name: "index_friendly_id_slugs_on_sluggable_type"
   end
 
   create_table "genres", force: :cascade do |t|
@@ -253,6 +253,8 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "active_status", default: 0
+    t.index ["active_status"], name: "index_key_players_on_active_status"
     t.index ["coin_id"], name: "index_key_players_on_coin_id"
     t.index ["user_id"], name: "index_key_players_on_user_id"
   end
@@ -266,14 +268,16 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.datetime "updated_at", null: false
     t.string "websitename"
     t.string "tag"
-    t.string "link_type"
     t.boolean "rejected", default: false
     t.boolean "pending", default: true
     t.boolean "exchange"
     t.text "description"
     t.datetime "deleted_at"
-    t.index ["coin_id"], name: "index_links_on_coin_id"
+    t.integer "active_status", default: 0
+    t.integer "link_type"
+    t.index ["active_status"], name: "index_links_on_active_status"
     t.index ["deleted_at"], name: "index_links_on_deleted_at"
+    t.index ["link_type"], name: "index_links_on_link_type"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -297,6 +301,7 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.boolean "rejected", default: false
     t.boolean "pending", default: true
     t.string "description"
+    t.integer "active_status", default: 0
     t.index ["coin_id"], name: "index_pictures_on_coin_id"
     t.index ["user_id"], name: "index_pictures_on_user_id"
   end
@@ -318,6 +323,23 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.string "post_type"
     t.integer "post_category"
     t.index ["deleted_at"], name: "index_posts_on_deleted_at"
+  end
+
+  create_table "question_images", force: :cascade do |t|
+    t.string "image"
+    t.boolean "accepted", default: false
+    t.boolean "pending", default: true
+    t.boolean "rejected", default: false
+    t.bigint "question_id"
+    t.bigint "user_id"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "top_pic", default: false
+    t.text "tags", default: [], array: true
+    t.text "tag_string"
+    t.index ["question_id"], name: "index_question_images_on_question_id"
+    t.index ["user_id"], name: "index_question_images_on_user_id"
   end
 
   create_table "questions", force: :cascade do |t|
@@ -343,7 +365,11 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.float "approval_rating", default: 0.0
     t.datetime "deleted_at"
     t.integer "citation_count", default: 0
+    t.integer "active_status", default: 0
+    t.index ["active_status"], name: "index_questions_on_active_status"
     t.index ["coin_id"], name: "index_questions_on_coin_id"
+    t.index ["deleted_at"], name: "index_questions_on_deleted_at"
+    t.index ["user_id"], name: "index_questions_on_user_id"
   end
 
   create_table "terms", force: :cascade do |t|
@@ -364,8 +390,8 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "image_data"
-    t.string "cached_image_data"
+    t.integer "active_status", default: 0
+    t.index ["active_status"], name: "index_terms_on_active_status"
     t.index ["coin_id"], name: "index_terms_on_coin_id"
     t.index ["user_id"], name: "index_terms_on_user_id"
   end
@@ -379,40 +405,38 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.inet "current_sign_in_ip"
-    t.inet "last_sign_in_ip"
-    t.string "confirmation_token"
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
-    t.string "unconfirmed_email"
-    t.integer "failed_attempts", default: 0, null: false
-    t.string "unlock_token"
-    t.datetime "locked_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "username"
-    t.string "fname"
-    t.string "lname"
-    t.boolean "terms_of_service", default: false
     t.string "wallet"
     t.boolean "admin", default: false
     t.boolean "moderator", default: false
-    t.decimal "currentbalance"
-    t.decimal "payout_to_date"
+    t.integer "currentbalance", default: 0
+    t.integer "payout_to_date", default: 0
     t.text "bio"
     t.string "facebook"
     t.string "twitter"
     t.string "instagram"
-    t.string "linked_in"
+    t.string "linkedin"
     t.string "youtube"
-    t.string "personal_website"
+    t.string "lname"
+    t.string "fname"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "unconfirmed_email"
     t.string "id_photo"
+    t.string "personal_website"
+    t.datetime "deleted_at"
+    t.boolean "terms_of_service"
     t.string "authentication_token", limit: 30
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
-    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   create_table "votes", id: :serial, force: :cascade do |t|
@@ -429,4 +453,19 @@ ActiveRecord::Schema.define(version: 2019_05_10_205906) do
     t.index ["voter_id", "voter_type", "vote_scope"], name: "index_votes_on_voter_id_and_voter_type_and_vote_scope"
   end
 
+  add_foreign_key "citations", "questions"
+  add_foreign_key "comments", "coins"
+  add_foreign_key "comments", "users"
+  add_foreign_key "flags", "coins"
+  add_foreign_key "flags", "posts"
+  add_foreign_key "flags", "questions"
+  add_foreign_key "flags", "users"
+  add_foreign_key "key_players", "coins"
+  add_foreign_key "key_players", "users"
+  add_foreign_key "pictures", "coins"
+  add_foreign_key "pictures", "users"
+  add_foreign_key "question_images", "questions"
+  add_foreign_key "question_images", "users"
+  add_foreign_key "terms", "coins"
+  add_foreign_key "terms", "users"
 end
