@@ -17,13 +17,13 @@ module Api::V1
     # end
 
     def index
-      @coins = Coin.where("active_status=?", 1)
+      @coins = Coin.active
       # @coins = Coin.all.search(params[:currency_name])
       populate_coin_data if @coins.any?
     end
 
     def pending
-      @pending_coins = Coin.where("active_status=?", 0)
+      @pending_coins = Coin.pending.order("created_at")
     end
 
     def new
@@ -42,33 +42,33 @@ module Api::V1
 
     def show
       # ------ Events ------- 
-      @coin_events = @coin.events.where("active_status=?", 1)
-      # @coin_events.each {
-      #     |e|
-      #     e.send('upvotes=', e.get_upvotes.size)
-      #     e.send('downvotes=', e.get_downvotes.size)
-      # }
+      @coin_events = @coin.events.active
+      @coin_events.each do |e|
+        e.send('upvotes=', e.get_upvotes.size)
+        e.send('downvotes=', e.get_downvotes.size)
+      end
        
       # ------ Links ------- 
-      @coin_exchanges                 = @coin.links.where("exchange=? AND active_status=?", true, 1).order('websitename ASC')
-      @other_links                    = @coin.links.where("exchange=? AND active_status=?", false, 1)
+      @coin_exchanges = @coin.links.exchange.active 
+      @other_links    = @coin.links.otherlink.active
 
       # ------ Questions -------
-      @accepted_questions = @coin.questions.where("active_status=?", 1)          
+      @accepted_questions = @coin.questions.active          
       @general_accepted = []
-      @general_accepted << @accepted_questions.where("ques_num=?", 1)[0]
-      @general_accepted << @accepted_questions.where("ques_num=?", 6)[0]
-      @general_accepted << @accepted_questions.where("ques_num=?", 7)[0]
-      @general_accepted << @accepted_questions.where("ques_num=?", 8)[0]
-      @general_accepted << @accepted_questions.where("ques_num=?", 9)[0] 
-      @open_topic_accepted = @coin.questions.where("ques_num=? AND active_status=?", 5, 1)
+
+      @general_accepted << @coin.questions.overview.active.first
+      @general_accepted << @coin.questions.history.active.first
+      @general_accepted << @coin.questions.goverence_model.active.first
+      @general_accepted << @coin.questions.business_model.active.first
+      @general_accepted << @coin.questions.use_cases.active.first
+      @open_topic_accepted = @coin.questions.open_topic.active
 
       # ------ Key Players / Terms ------
-      @accepted_terms                 = @coin.terms.where("active_status=?", 1)
-      @accepted_key_players           = @coin.key_players.where("active_status=?", 1)
+      @accepted_terms                 = @coin.terms.active
+      @accepted_key_players           = @coin.key_players.active
       
       # ------ Posts -------
-      @community_posts                = Post.where("coin_id=?", @coin).first(10)
+      @community_posts                = @coin.posts.first(10)
   
       if current_user
         @favorite_coins               = @coin.favorites.where("user_id=?", current_user.id)
@@ -160,15 +160,6 @@ module Api::V1
         render json: {coins: @coins}
       end
 
-      # def get_public_ip_address
-      #   require "open-uri"
-      #   if request.remote_ip == '127.0.0.1'
-      #     return open('https://api.ipify.org/').read
-      #   else
-      #     return request.remote_ip
-      #   end
-      # end
-
       def populate_coin_data
         if @coins
           coin_csv = @coins.map{|x| x.currency_abbrev}.to_csv
@@ -218,20 +209,20 @@ module Api::V1
       end
 
       def get_submission_count
-        @included_topics  = @coin.questions.where('ques_num=? AND active_status=?', 5, 1).map(&:open_topic)
-        @open_topics      = @coin.questions.where('ques_num=? and active_status=?', 5, 0).select { |a| @included_topics.exclude? (a.open_topic)}
+        @included_topics  = @coin.questions.active.where('ques_num=?', 5).map(&:open_topic)
+        @open_topics      = @coin.questions.pending.where('ques_num=?', 5).select { |a| @included_topics.exclude? (a.open_topic)}
         @open_topic_count = @open_topics.size
       end
 
       def get_pending_term_and_kp_counts
-        @pending_kp   = @coin.key_players.where("active_status=?", 0)
-        @pending_term = @coin.terms.where("active_status=?", 0)
+        @pending_kp   = @coin.key_players.pending
+        @pending_term = @coin.terms.pending
         if @pending_kp.any?
-          @accepted_kp_titles = @coin.key_players.where("active_status=?", 1).map { |t| t[:title] }
+          @accepted_kp_titles = @coin.key_players.active.map { |t| t[:title] }
           @pending_kp = @pending_kp.reject { |t| @accepted_kp_titles.include?(t[:title]) }
         end
         if @pending_term.any?
-          @accepted_term_titles = @coin.terms.where("active_status=?", 1).map { |t| t[:title] }
+          @accepted_term_titles = @coin.terms.active.map { |t| t[:title] }
           @pending_term = @pending_term.reject { |t| @accepted_term_titles.include?(t[:title]) }
         end
         @new_pending_terms_count = @pending_term.size

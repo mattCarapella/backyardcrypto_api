@@ -1,8 +1,7 @@
  module Api::V1  
   class QuestionsController < ApiController
     before_action :find_coin #, except: [:editor_images, :geteditor_images]
-    before_action :find_ques_num, only: [:index]  
-    # before_action :find_user
+    before_action :find_ques_num, only: [:index]
     # before_action :ensure_url_params, only:[:new]
     # before_action :find_top_picture, only: [:show]
     # skip_before_action :verify_authenticity_token, :only => [:editor_images]
@@ -13,65 +12,66 @@
       @sort_by = params[:sort_by] ? params[:sort_by] : 'approval'    
       if params[:ques_num].blank?
         # Archive for all coin questions (.../coins/bitcoin/questions)
-        @pending =  @coin.questions.where("active_status=?", 0)
-        @accepted = @coin.questions.where("active_status=?", 1)
-        @inactive = @coin.questions.where("active_status=?", 2)
+        @pending =  @coin.questions.pending
+        @accepted = @coin.questions.active
+        @inactive = @coin.questions.inactive
       else 
         if params[:id] && params[:ques_num] == '5'
           # Archive for open topic questions (.../coins/bitcoin/questions?id=29&ques_num=5)
           num = params[:ques_num]
           question = Question.find(params[:id])
           topic = question.open_topic
-          @pending  = @coin.questions.where("ques_num=? AND open_topic=? AND active_status=?", 5, topic, 0)
-          @accepted = @coin.questions.where("ques_num=? AND open_topic=? AND active_status=?", 5, topic, 1)
-          @rejected = @coin.questions.where("ques_num=? AND open_topic=? AND active_status=?", 5, topic, 2)
+          @pending  = @coin.questions.open_topic.pending.where("open_topic=?", topic)
+          @accepted = @coin.questions.open_topic.active.where("open_topic=?", topic)
+          @rejected = @coin.questions.open_topic.inactive.where("open_topic=?", topic)
         else
           # Archive for specific questions (.../coins/bitcoin/questions?ques_num=2)
           num = params[:ques_num]
-          @pending  = @coin.questions.where("ques_num=? AND active_status=?", num, 0)
-          @accepted = @coin.questions.where("ques_num=? AND active_status=?", num, 1)
-          @rejected = @coin.questions.where("ques_num=? AND active_status=?", num, 2)
+          @pending  = @coin.questions.pending.where("ques_num=?", num)
+          @accepted = @coin.questions.active.where("ques_num=?", num)
+          @rejected = @coin.questions.inactive.where("ques_num=?", num)
         end
         if params[:ques_num] == '5' 
-          @included_topics =  @coin.questions.where("ques_num=? AND active_status=?", 5, 1).map(&:open_topic)
-          @open_topics =      @coin.questions.where('ques_num=? AND active_status=?', 5, 0).select { |a| @included_topics.exclude? (a.open_topic)}
-          @open_topic_count = @open_topics.count
+          @included_topics =  @coin.questions.open_topic.active.map(&:open_topic)
+          @open_topics =      @coin.questions.open_topic.pending.select { |a| @included_topics.exclude? (a.open_topic)}
+          @open_topic_count = @open_topics.size
         end
       end
     end
 
     def show
-      @question = Question.find(params[:id])
-      @upvotes = @question.get_upvotes.size
-      @downvotes = @question.get_downvotes.size
-      @total_votes = Float(@upvotes + @downvotes)
+      @question        = Question.find(params[:id])
+      @upvotes         = @question.get_upvotes.size
+      @downvotes       = @question.get_downvotes.size
+      @total_votes     = Float(@upvotes + @downvotes)
       @approval_rating = (@upvotes/@total_votes*100).round(2)
-      @comments = @question.comments.all
-      # @comments = @question.comments.where(parent_id: nil)
-      # @comments.each {
-      #     |c|
-      #     c.send('upvotes=', c.get_upvotes.size)
-      #     c.send('downvotes=', c.get_downvotes.size)
-      # }
+      @comments        = @question.comments.all
+      @comments        = @question.comments.where(parent_id: nil)
+
+      @comments.each do |c|
+        c.send('upvotes=', c.get_upvotes.size)
+        c.send('downvotes=', c.get_downvotes.size)
+      end
+
       # @main_page_images = @question.question_images.where("accepted=?", true).first(8)
       @citations = @question.citations.all
       @question.send('upvotes=', @question.get_upvotes.size)
       @question.send('downvotes=', @question.get_downvotes.size)
     end
 
-   #  def discussion
-   #  	@question = Question.find(params[:id])
-   #  	if params[:comment]
-   #  		@comments = @question.comments.where(id: params[:comment])
-   #  	else
-  	#   	@comments = @question.comments.where(parent_id: nil).paginate(:page => params[:page], :per_page => 10)
-  	#   end
-   #      @comments.each {
-   #          |c|
-   #          c.send('upvotes=', c.get_upvotes.size)
-   #          c.send('downvotes=', c.get_downvotes.size)
-   #      }
-   #  end
+  #  def discussion
+  #  	@question = Question.find(params[:id])
+  #  	if params[:comment]
+  #  		@comments = @question.comments.where(id: params[:comment])
+  #  	else
+  #   	@comments = @question.comments.where(parent_id: nil).paginate(:page => params[:page], :per_page => 10)
+  #   end
+  #      @comments.each {
+  #          |c|
+  #          c.send('upvotes=', c.get_upvotes.size)
+  #          c.send('downvotes=', c.get_downvotes.size)
+  #      }
+  #  end
 
     def new
       #@question = current_user.questions.build
@@ -82,21 +82,12 @@
       #@question = current_user.questions.build(question_params)
       @question = Question.new(question_params)
       @question.coin = @coin
-      if @question.save
+      if @question.save # && verify_recaptcha(model: @question)
+        # Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", notifiable: @question)
         render json: @question, status: :created
       else
         render json: @question.errors, status: :unprocessable_entity
       end
-
-   #   if verify_recaptcha(model: @question) && @question.save
-   #      Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted",
-   #                              notifiable: @question)
-   #      flash[:notice] = "Your submission has been accepted and will be reviewed by a moderator."
-   #      redirect_to coin_path(@coin)
-   #   else
-   #      flash[:notice] = "reCaptcha verification unsuccessful. Please try again."
-   #     render 'new'
-   #   end
     end
 
     def update
@@ -147,13 +138,6 @@
   	# 	logger.info(@questions.to_json)
    #  end
 
-   #  def rejected
-   #    @questions = Question.where(coin_id: @coin.id).order("created_at DESC")
-   #    @rejected = @questions.select { |question| question.rejected == true }
-   #    authorize! :update, @question
-   #    logger.info(@questions.to_json)
-   #  end
-
     def challenge
       #:authenticate_user!
       @question = Question.find(params[:id])
@@ -179,43 +163,32 @@
       question = Question.find(params[:id])
       if question.active_status == 0 or question.active_status == 1
         question.active_status = 2
-        question.save
+        question.save!
       end   
     end
 
-   #  def upvote
-   #    @question = Question.find(params[:id] )
-   #    @question.upvote_by current_user
-   #    upvotes = @question.get_upvotes.size
-   #    downvotes = @question.get_downvotes.size
-   #    total_votes = Float(upvotes + downvotes)
-   #    @question.update(approval_rating: (upvotes/total_votes).round(4))
-   #    redirect_to request.referrer
-   #  end
+    def upvote
+      @question = Question.find(params[:id] )
+      @question.upvote_by current_user if current_user
+      upvotes = @question.get_upvotes.size
+      downvotes = @question.get_downvotes.size
+      total_votes = Float(upvotes + downvotes)
+      @question.update(approval_rating: (upvotes/total_votes).round(4))
+    end
 
-   #  def downvote
-   #    @question = Question.find(params[:id] )
-   #    @question.downvote_by current_user
-   #    upvotes = @question.get_upvotes.size
-   #    downvotes = @question.get_downvotes.size
-   #    total_votes = Float(upvotes + downvotes)
-   #    @question.update(approval_rating: (upvotes/total_votes).round(4))
-   #    redirect_to request.referrer
-   #  end
+    def downvote
+      @question = Question.find(params[:id] )
+      @question.downvote_by current_user if current_user
+      upvotes = @question.get_upvotes.size
+      downvotes = @question.get_downvotes.size
+      total_votes = Float(upvotes + downvotes)
+      @question.update(approval_rating: (upvotes/total_votes).round(4))
+    end
 
-   #  def get_approval_rating
-   #    upvotes = self.get_upvotes.size
-   #    downvotes = self.get_downvotes.size
-   #    total_votes = Float(upvotes + downvotes)
-   #    @approval_rating = (upvotes+up_add/total_votes+down_add*100).round(2)
-   #  end
-
-   #  def flag
-   #    @question.update(flagged: true)
-   #    Notification.create(recipient: @question.coin.moderator, actor: current_user, action: "flagged",
-   #                              notifiable: @question)
-   #    redirect_to [@question.coin, @question]
-   #  end
+    # def flag
+    #   @question.update(flagged: true)
+    #   Notification.create(recipient: @question.coin.moderator, actor: current_user, action: "flagged", notifiable: @question)
+    # end
 
     
     private
@@ -231,14 +204,6 @@
 
       def find_coin
         @coin = Coin.friendly.find(params[:coin_id])
-      end
-
-      def find_user
-        @user = current_user
-      end
-     
-      def accepted?
-        @question.accepted
       end
 
    #    def find_top_picture

@@ -10,6 +10,7 @@ class Coin < ApplicationRecord
   has_many :pictures, dependent: :destroy
   has_many :favorites
   has_many :notifications#, dependent: :destroy
+  has_many :posts, dependent: :destroy
  
   belongs_to :user
   belongs_to :moderator, class_name: "User" , :foreign_key => "moderator_id",  optional: true

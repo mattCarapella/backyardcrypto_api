@@ -10,15 +10,15 @@ module Api::V1
         if params[:coin_id]
         	# Coin specific KeyPlayer archive (.../coins/bitcoin/key_players)
           @path = "coin"
-          @pending_kp  = @coin.key_players.where("active_status=?", 0).order("title ASC")        
-          @accepted_kp = @coin.key_players.where("active_status=?", 1).order("title ASC")
-          @rejected_kp = @coin.key_players.where("active_status=?", 2).order("title ASC")
+          @pending_kp  = @coin.key_players.pending.order("title ASC")        
+          @accepted_kp = @coin.key_players.active.order("title ASC")
+          @rejected_kp = @coin.key_players.inactive.order("title ASC")
         else
         	# Whole site KeyPlayer archive (.../key_players)
           @path = "general"
-          @pending_kp  = KeyPlayer.where("active_status=?", 0).order("title ASC")
-          @accepted_kp = KeyPlayer.where("active_status=?", 1).order("title ASC")         
-          @rejected_kp = KeyPlayer.where("active_status=?", 2).order("title ASC")  
+          @pending_kp  = KeyPlayer.pending.order("title ASC")
+          @accepted_kp = KeyPlayer.active.order("title ASC")         
+          @rejected_kp = KeyPlayer.inactive.order("title ASC")  
         end  
         # Remove duplicates from @pending index if there is an approved kp with the same name
         if @accepted_kp.any? && @pending_kp.any?  
@@ -29,15 +29,15 @@ module Api::V1
         if params[:coin_id]	
           # Specific KeyPlayer archive - Coin (.../coins/bitcoin/key_players?key_player=Decentralization)
           @kp_title = params[:key_player]
-          @pending_kp  = @coin.key_players.where("title=? AND active_status=?", @kp_title, 0).order("title ASC")
-          @accepted_kp = @coin.key_players.where("title=? AND active_status=?", @kp_title, 1).order("title ASC")          
-          @rejected_kp = @coin.key_players.where("title=? AND active_status=?", @kp_title, 2).order("title ASC")
+          @pending_kp  = @coin.key_players.pending.where("title=?", @kp_title).order("title ASC")
+          @accepted_kp = @coin.key_players.active.where("title=?", @kp_title).order("title ASC")          
+          @rejected_kp = @coin.key_players.inactive.where("title=?", @kp_title).order("title ASC")
         else
           # Specific KeyPlayer archive - Coin (.../coins/bitcoin/key_players?key_player=Decentralization)
           @kp_title = params[:key_player]
-          @pending_kp  = KeyPlayer.where("title=? AND active_status=?", @kp_title, 0).order("title ASC")
-          @accepted_kp = KeyPlayer.where("title=? AND active_status=?", @kp_title, 1).order("title ASC")
-          @rejected_kp = KeyPlayer.where("title=? AND active_status=?", @kp_title, 2).order("title ASC")
+          @pending_kp  = KeyPlayer.pending.where("title=?", @kp_title).order("title ASC")
+          @accepted_kp = KeyPlayer.active.where("title=?", @kp_title).order("title ASC")
+          @rejected_kp = KeyPlayer.inactive.where("title=?", @kp_title).order("title ASC")
         end
       end   
       @active_count   = @accepted_kp.size if @accepted_kp
@@ -93,25 +93,27 @@ module Api::V1
 
     def activate
       # authorize! :update, @key_player
-      if @key_player.valid? :activate # validates thaat there is only 1 accepted answer per KeyPlayer
+      if @key_player.valid? :activate # validates that there is only 1 accepted answer per KeyPlayer
         @key_player.active_status = 1
         @key_player.save!
         render json: @key_player, status: :ok
       else 
-        render json: @key_player.errors, status: :unprocessable_entity
+        render json: { error: 'can not activate' }, status: :unprocessable_entity
       end   
     end
 
     def deactivate
       # authorize! :update, @key_player
-      @key_player.active_status = 2
-      @key_player.save!
+      unless @key_player.active_status = 2
+        @key_player.active_status = 2
+        @key_player.save!
+      end
     end
 
-    def challenge
-      old_key_player = @key_player.title
-      @submissions = KeyPlayer.where(coin_id: @coin.id, title: old_key_player, accepted: false)
-    end
+    # def challenge
+    #   old_key_player = @key_player.title
+    #   @submissions = KeyPlayer.where(coin_id: @coin.id, title: old_key_player, accepted: false)
+    # end
 
     private 
 

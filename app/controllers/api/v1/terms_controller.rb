@@ -10,15 +10,15 @@ module Api::V1
         if params[:coin_id]
           # Coin specific Term archive (.../coins/bitcoin/terms)
           @path = "coin"
-          @pending  = @coin.terms.where("active_status=?", 0).order("title ASC")        
-          @accepted = @coin.terms.where("active_status=?", 1).order("title ASC")
-          @rejected = @coin.terms.where("active_status=?", 2).order("title ASC")        
+          @pending  = @coin.terms.pending.order("title ASC")        
+          @accepted = @coin.terms.active.order("title ASC")
+          @rejected = @coin.terms.inactive.order("title ASC")        
         else
           # Whole site Term archive (.../terms)
           @path = "general"
-          @pending  = Term.where("active_status=?", 0).order("title ASC")        
-          @accepted = Term.where("active_status=?", 1).order("title ASC")
-          @rejected = Term.where("active_status=?", 2).order("title ASC")    
+          @pending  = Term.pending.order("title ASC")        
+          @accepted = Term.active.order("title ASC")
+          @rejected = Term.inactive.order("title ASC")    
         end  
         if @accepted.any? && @pending.any?  
           # Remove duplicates from @pending index if there is an approved term with the same name
@@ -29,20 +29,20 @@ module Api::V1
         if params[:coin_id]  
           # Specific Term archive - Coin (.../coins/bitcoin/terms?term=Decentralization)
           @term_title = params[:term]
-          @pending    = @coin.terms.where("title=? AND active_status=?", @term_title, 0).order("title ASC")
-          @accepted   = @coin.terms.where("title=? AND active_status=?", @term_title, 1).order("title ASC")        
-          @rejected   = @coin.terms.where("title=? AND active_status=?", @term_title, 2).order("title ASC")
+          @pending    = @coin.terms.pending.where("title=?", @term_title).order("title ASC")
+          @accepted   = @coin.terms.active.where("title=?", @term_title).order("title ASC")        
+          @rejected   = @coin.terms.inactive.where("title=?", @term_title).order("title ASC")
         else
           # Specific Term archive - General (.../terms?term=Decentralization)
           @term_title = params[:term]
-          @pending    = Term.where("title=? AND active_status=?", @term_title, 0).order("title ASC")
-          @accepted   = Term.where("title=? AND active_status=?", @term_title, 1).order("title ASC")        
-          @rejected   = Term.where("title=? AND active_status=?", @term_title, 2).order("title ASC") 
+          @pending    = Term.pending.where("title=?", @term_title).order("title ASC")
+          @accepted   = Term.active.where("title=?", @term_title).order("title ASC")        
+          @rejected   = Term.inactive.where("title=?", @term_title).order("title ASC") 
         end
       end
-      @active_count   = @accepted.length if @accepted
-      @inactive_count = @rejected.length if @rejected
-      @pending_count  = @pending.length  if @pending
+      @active_count   = @accepted.size if @accepted
+      @inactive_count = @rejected.size if @rejected
+      @pending_count  = @pending.size  if @pending
     end
 
     def show
@@ -64,13 +64,11 @@ module Api::V1
       if @term.save # && verify_recaptcha(model: @term)
         if params[:coin_id]
           render json: @term, status: :created
-          # Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", 
-          #                     notifiable: @term)
+          # Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", notifiable: @term)
         else
           render json: @term, status: :created
           # admin_user = User.where("admin=?", true).first
-          # Notification.create(recipient: admin_user, actor: current_user, action: "submitted", 
-          #                     notifiable: @term)
+          # Notification.create(recipient: admin_user, actor: current_user, action: "submitted", notifiable: @term)
         end 
       else
         render json: @term.errors, status: :unprocessable_entity

@@ -6,22 +6,20 @@ module Api::V1
     # load_and_authorize_resource
 
     def index     
-      @pending_events  = @coin.events.where('active_status=?', 0)
-      @accepted_events = @coin.events.where('active_status=?', 1)
-      @rejected_events = @coin.events.where('active_status=?', 2)
+      @pending_events  = @coin.events.pending
+      @accepted_events = @coin.events.active
+      @rejected_events = @coin.events.inactive
       today = Date.current 
       @upcoming_events = @accepted_events.where('start_time > ?', today)
       @past_events = @accepted_events.where('start_time < ?', today)
-      # @events.each {
-      #   |e|
-      #   e.send('upvotes=', e.get_upvotes.size)
-      #   e.send('downvotes=', e.get_downvotes.size)
-      # }
+      @coin.events.each do |e|
+        e.send('upvotes=', e.get_upvotes.size)
+        e.send('downvotes=', e.get_downvotes.size)
+      end
     end
 
     def calendar
-      @coin = Coin.find(params[:coin_id])
-      @events = @coin.events.where('active_status=? AND start_time > ?', 1, Date.today)
+      @events = @coin.events.active.where('start_time > ?', Date.today)
     end
 
     def show

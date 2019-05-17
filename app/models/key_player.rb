@@ -17,7 +17,7 @@ class KeyPlayer < ApplicationRecord
 
 		def approve_only_one	
 			accepted_answers = KeyPlayer.where('title=? AND coin_id=? AND active_status=?', self.title, self.coin_id, 1)
-			unless accepted_answers.count < 1 
+			unless accepted_answers.size < 1 
 				errors.add :base, 'There can only be one accepted answer'
 			end
 		end

@@ -6,7 +6,8 @@ class Link < ApplicationRecord
 	validates :websitename, presence: true
 	validate  :add_url_protocol
 
-	enum link_type:[:exchange, :website]
+	enum link_type: [:otherlink, :exchange]
+	enum active_status: [:pending, :active, :inactive]
 
 	def add_url_protocol
 	  if self.url && !url_protocol_present?

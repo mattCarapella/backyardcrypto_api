@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_17_041758) do
+ActiveRecord::Schema.define(version: 2019_05_17_055520) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -274,7 +274,7 @@ ActiveRecord::Schema.define(version: 2019_05_17_041758) do
     t.text "description"
     t.datetime "deleted_at"
     t.integer "active_status", default: 0
-    t.integer "link_type"
+    t.integer "link_type", default: 0
     t.index ["active_status"], name: "index_links_on_active_status"
     t.index ["deleted_at"], name: "index_links_on_deleted_at"
     t.index ["link_type"], name: "index_links_on_link_type"
@@ -369,6 +369,7 @@ ActiveRecord::Schema.define(version: 2019_05_17_041758) do
     t.index ["active_status"], name: "index_questions_on_active_status"
     t.index ["coin_id"], name: "index_questions_on_coin_id"
     t.index ["deleted_at"], name: "index_questions_on_deleted_at"
+    t.index ["ques_num"], name: "index_questions_on_ques_num"
     t.index ["user_id"], name: "index_questions_on_user_id"
   end
 

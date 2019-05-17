@@ -17,7 +17,7 @@ class Picture < ApplicationRecord
 
     def approve_only_one
       accepted_pictures = Picture.where(coin_id: self.coin.id, active_status: 1)
-      unless accepted_pictures.count < 1 
+      unless accepted_pictures.size < 1 
         errors.add :base, 'There can only be one accepted answer'
       end
     end
