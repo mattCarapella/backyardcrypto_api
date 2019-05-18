@@ -6,7 +6,6 @@ module Api::V1
 		def create
 			@question.favorites.where(user_id: current_user.id).first_or_create
 			respond_to do |format| 
-				format.html { redirect_to @question }
 				format.js
 			end
 		end
@@ -14,7 +13,6 @@ module Api::V1
 		def destroy
 			@question.favorites.where(user_id: current_user.id).destroy_all
 			respond_to do |format| 
-				format.html { redirect_to @question }
 				format.js
 			end
 		end

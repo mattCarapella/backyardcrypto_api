@@ -1,6 +1,7 @@
 json = {	
 
 	current_user: @current_user,
+	favorites: @favorite_coins,
 	id: @coin.id,
 	currency_name: @coin.currency_name,
 	link_name: @coin.link_name,
@@ -39,7 +40,12 @@ json = {
 
 
 json[:overview] = {
-	general_accepted: @general_accepted,
+	general_accepted: [ @coin.questions.overview.active.first, 
+                            @coin.questions.history.active.first,
+                            @coin.questions.goverence_model.active.first,
+                            @coin.questions.business_model.active.first,
+                            @coin.questions.use_cases.active.first
+                          ]
 }
 
 json[:indepth_analysis] = {

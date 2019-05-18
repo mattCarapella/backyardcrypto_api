@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_17_055520) do
+ActiveRecord::Schema.define(version: 2019_05_18_172935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -433,6 +433,7 @@ ActiveRecord::Schema.define(version: 2019_05_17_055520) do
     t.datetime "deleted_at"
     t.boolean "terms_of_service"
     t.string "authentication_token", limit: 30
+    t.integer "newsletter"
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true

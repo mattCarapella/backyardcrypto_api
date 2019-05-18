@@ -8,8 +8,10 @@ module Api::V1
   	def create
   		@user = User.where(email: params[:email]).first
   		if @user&.valid_password?(params[:password])
-        expiration = Time.now + 1.days
-        jwt = WebToken.encode(@user)
+        jwt=''
+        p "**** t1: " + jwt
+          jwt = WebToken.encode(@user)
+          p '***** t2: ' + jwt
         render :create, locals: { token: jwt }, status: :created
       else 
   			render json: { error: 'invalid_credentials' }, status: :unauthorized
@@ -17,12 +19,12 @@ module Api::V1
   	end 
 
   	def destroy
-      current_user&.authentication_token = nil
-      if current_user.save
-        head(:ok)
-      else 
-        head(:unauthorized)
-      end
+      #current_user&.authentication_token = nil
+      #if current_user.save
+      #  head(:ok)
+      #else 
+      #  head(:unauthorized)
+      #end
   	end
 
   end

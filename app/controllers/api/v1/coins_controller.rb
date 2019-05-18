@@ -5,7 +5,7 @@ module Api::V1
     #load_and_authorize_resource param_method: :question_params    # CANCANCAN
     #load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
-    #before_action :authenticate_user!#, except: [:index, :show]
+    before_action :authenticate_user!#, except: [:index, :show]
     before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
     # before_action :get_localized_event_datetime, only: :show
@@ -54,13 +54,12 @@ module Api::V1
 
       # ------ Questions -------
       @accepted_questions = @coin.questions.active          
-      @general_accepted = []
-
-      @general_accepted << @coin.questions.overview.active.first
-      @general_accepted << @coin.questions.history.active.first
-      @general_accepted << @coin.questions.goverence_model.active.first
-      @general_accepted << @coin.questions.business_model.active.first
-      @general_accepted << @coin.questions.use_cases.active.first
+      # @general_accepted = [ @coin.questions.overview.active.first, 
+      #                       @coin.questions.history.active.first,
+      #                       @coin.questions.goverence_model.active.first,
+      #                       @coin.questions.business_model.active.first,
+      #                       @coin.questions.use_cases.active.first
+      #                     ]
       @open_topic_accepted = @coin.questions.open_topic.active
 
       # ------ Key Players / Terms ------
@@ -80,7 +79,7 @@ module Api::V1
 
     def edit   
       if params[:q].present?
-        @question = Question.find_by_id(params[:q])
+        @question = Question.find_by_id(params[:q]) 
         @num = @question.ques_num
         if @question.present?
           authorize! :update, @coin
@@ -98,7 +97,6 @@ module Api::V1
       else
         render json: @coin.errors, status: :unprocessable_entity
       end
-
       # mode = true
       # mode = Coin.check_moderator_email(params[:coin][:moderator_email]) if params[:coin][:moderator_email].present?      
       #   @coin.moderator_id = User.find_by_email(params[:coin][:moderator_email]).id if params[:coin][:moderator_email].present?

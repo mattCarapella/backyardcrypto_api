@@ -12,9 +12,9 @@ class ApplicationController < ActionController::API
       devise_parameter_sanitizer.permit :account_update, keys: added_attrs
     end	
 
-    # def user_params
-    #   params.require(:user).permit(:email, :terms_of_service, :username, :password, :password_confirmation, :fname,:lname, :wallet, :admin, :moderator, :currentbalance, :payout_to_date, :bio, :facebook, :twitter, :instagram, :linkedin, :youtube, :personal_website, :authentication_token) if params[:user].present?
-    # end
+    def user_params
+      params.require(:user).permit(:email, :terms_of_service, :username, :password, :password_confirmation, :fname,:lname, :wallet, :admin, :moderator, :currentbalance, :payout_to_date, :bio, :facebook, :twitter, :instagram, :linkedin, :youtube, :personal_website, :authentication_token) if params[:user].present?
+    end
 
     # def sign_up_params
     #   params.require(:user).permit(:name, :terms_of_service, :username,:age, :password,:password_confirmation, :remember_me,:fname, :lname, :wallet, :admin, :moderator, :currentbalance, :payout_to_date, :bio, :facebook, :twitter, :instagram, :linkedin, :youtube, :personal_website, :id_photo) if params[:user].present?

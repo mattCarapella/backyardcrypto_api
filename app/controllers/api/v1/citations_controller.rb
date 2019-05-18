@@ -1,7 +1,6 @@
 module Api::V1   
   class CitationsController < ApiController
     before_action :set_citation, except: [:create, :new]
-    before_action :set_coin
     before_action :set_question
     # before_action :authenticate_user!
    	# load_and_authorize_resource
@@ -45,10 +44,6 @@ module Api::V1
       
       def set_citation
         @citation = Citation.find(params[:id]) 
-      end
-
-      def set_coin
-        @coin = Coin.friendly.find(params[:coin_id])
       end
 
       def set_question 

@@ -9,7 +9,7 @@ module WebToken
 		end
 
 		def decode(token)
-			JWT.decode(get_token, WebToken::SECRET, true, { algorithm: 'HS256' }).first
+			JWT.decode(token, WebToken::SECRET, true, { algorithm: 'HS256' }).first
 		rescue JWT::ExpiredSignature
 		  :expired
 		end
@@ -17,7 +17,7 @@ module WebToken
 		private 
 
 			def token_params(user)
-				{user_id: user.id, exp: EXPIRE}
+				{ user_id: user.id, exp: EXPIRE }
 			end
 
 	end
