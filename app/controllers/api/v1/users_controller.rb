@@ -30,7 +30,7 @@ module Api::V1
     private 
 
       def user_params
-        params.require(:user).permit(:username, :email, :password, :password_confirmation, :fname, :lname)
+        params.require(:user).permit(:username, :email, :password, :password_confirmation, :fname, :lname, :newsletter)
       end
 
   	# def index

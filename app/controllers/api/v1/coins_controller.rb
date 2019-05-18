@@ -5,7 +5,7 @@ module Api::V1
     #load_and_authorize_resource param_method: :question_params    # CANCANCAN
     #load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
-    before_action :authenticate_user!#, except: [:index, :show]
+    #before_action :authenticate_user!#, except: [:index, :show]
     before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
     # before_action :get_localized_event_datetime, only: :show

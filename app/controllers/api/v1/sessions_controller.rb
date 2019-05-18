@@ -6,15 +6,14 @@ module Api::V1
     end
 
   	def create
-  		@user = User.where(email: params[:email]).first
-  		if @user&.valid_password?(params[:password])
-        jwt=''
-        p "**** t1: " + jwt
-          jwt = WebToken.encode(@user)
-          p '***** t2: ' + jwt
+  		@user = User.where(email: params["user"][:email]).first
+  		if @user&.valid_password?(params["user"][:password])
+        puts "SIGNED IN *******"
+        jwt = ''
+        jwt = WebToken.encode(@user)
         render :create, locals: { token: jwt }, status: :created
       else 
-  			render json: { error: 'invalid_credentials' }, status: :unauthorized
+  			render json: { error: 'invalid_credentials' }, status: 401
   		end
   	end 
 

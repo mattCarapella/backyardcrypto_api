@@ -10,5 +10,7 @@
 		change: coin.change_24,
 		market_cap: coin.market_cap,
 		picture: coin.picture,
+		user: coin.user,
+		created_at: coin.created_at
 	}
 end
