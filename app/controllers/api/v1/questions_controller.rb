@@ -26,10 +26,30 @@
           @rejected = @coin.questions.open_topic.inactive.where("open_topic=?", topic)
         else
           # Archive for specific questions (.../coins/bitcoin/questions?ques_num=2)
-          num = params[:ques_num]
-          @pending  = @coin.questions.pending.where("ques_num=?", num)
-          @accepted = @coin.questions.active.where("ques_num=?", num)
-          @rejected = @coin.questions.inactive.where("ques_num=?", num)
+          ques_param = params[:ques_num]  
+          p ques_param 
+          p "*******: " + params[:coin_id]
+          if ques_param == 'overview'
+            @pending   = @coin.questions.overview.pending
+            @accepted  = @coin.questions.overview.active
+            @rejected  = @coin.questions.overview.inactive
+          elsif ques_param == 'history'
+            @pending   = @coin.questions.history.pending
+            @accepted  = @coin.questions.history.active
+            @rejected  = @coin.questions.history.inactive
+          elsif ques_param == 'goverence_model'
+            @pending   = @coin.questions.goverence_model.pending
+            @accepted  = @coin.questions.goverence_model.active
+            @rejected  = @coin.questions.goverence_model.inactive
+          elsif ques_param == 'business_model'
+            @pending   = @coin.questions.business_model.pending
+            @accepted  = @coin.questions.business_model.active
+            @rejected  = @coin.questions.business_model.inactive
+          elsif ques_param == 'use_cases'
+            @pending   = @coin.questions.use_cases.pending
+            @accepted  = @coin.questions.use_cases.active
+            @rejected  = @coin.questions.use_cases.inactive
+          end 
         end
         if params[:ques_num] == '5' 
           @included_topics =  @coin.questions.open_topic.active.map(&:open_topic)

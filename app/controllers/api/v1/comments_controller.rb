@@ -27,7 +27,7 @@ module Api::V1
       	if @comment.commentable and @comment.parent.present?
   				#Notification.create(recipient: @comment.parent.user, actor: current_user, action: "replied", notifiable: @comment)
   			end
-        render json: {comment: @comment}
+        render json: {comment: @comment, user: @comment.user}
       	# respond_to do |format|
       	# 	if params[:coin_id]
   	    # 		format.html { redirect_to [@commentable.coin, @commentable] }
