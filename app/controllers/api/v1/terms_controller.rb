@@ -2,10 +2,10 @@ module Api::V1
   class TermsController < ApiController  
     before_action :set_term, except: [:index, :create, :new]
     before_action :set_coin 
-    before_action :authenticate_user!, except: [:index]
+    before_action :authenticate_user!#, except: [:index]
     load_and_authorize_resource
 
-    def index      
+    def index
       if params[:term].blank?   
         if params[:coin_id]
           # Coin specific Term archive (.../coins/bitcoin/terms)
