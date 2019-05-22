@@ -25,9 +25,9 @@ module Api::V1
       end
       if @comment.save
       	if @comment.commentable and @comment.parent.present?
-  				#Notification.create(recipient: @comment.parent.user, actor: current_user, action: "replied", notifiable: @comment)
+  			  # Notification.create(recipient: @comment.parent.user, actor: current_user, action: "replied", notifiable: @comment)
   			end
-        render json: {comment: @comment, user: @comment.user}
+        render json: { comment: @comment, user: @comment.user }
       	# respond_to do |format|
       	# 	if params[:coin_id]
   	    # 		format.html { redirect_to [@commentable.coin, @commentable] }
@@ -47,7 +47,7 @@ module Api::V1
         @comment.edited = true
         @comment.save!
       end
-      render json: {comment: @comment}
+      render json: { comment: @comment }
     end
 
     def destroy
@@ -61,13 +61,13 @@ module Api::V1
     def upvote
       @comment = @commentable.comments.find(params[:id])
       @comment.upvote_by current_user
-      render json: {likes: @comment.get_upvotes.size,dislikes: @comment.get_downvotes.size}
+      render json: { likes: @comment.get_upvotes.size, dislikes: @comment.get_downvotes.size }
     end
 
     def downvote
       @comment = @commentable.comments.find(params[:id])
       @comment.downvote_by current_user
-      render json: {likes: @comment.get_upvotes.size,dislikes: @comment.get_downvotes.size}
+      render json: { likes: @comment.get_upvotes.size, dislikes: @comment.get_downvotes.size }
     end
 
     private

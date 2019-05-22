@@ -35,6 +35,7 @@ module Api::V1
   	  @event = Event.new(event_params)
       @event.coin = @coin
       if @event.save
+        # Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", notifiable: @event) if @coin.moderator
         @event.geocode
         @event.save!
         render json: @event, status: :created
@@ -62,24 +63,24 @@ module Api::V1
 
     def getupvotes
       @event = Event.find(params[:id] )
-      render json: {likes: @event.get_upvotes.size,dislikes: @event.get_downvotes.size}
+      render json: { likes: @event.get_upvotes.size, dislikes: @event.get_downvotes.size }
     end
 
     def getdownvotes
       @event = Event.find(params[:id] )
-      render json: {likes: @event.get_upvotes.size,dislikes: @event.get_downvotes.size}
+      render json: { likes: @event.get_upvotes.size, dislikes: @event.get_downvotes.size }
     end
 
     def upvote
     	@event = Event.find(params[:id] )
     	@event.upvote_by current_user
-      render json: {likes: @event.get_upvotes.size,dislikes: @event.get_downvotes.size}
+      render json: { likes: @event.get_upvotes.size, dislikes: @event.get_downvotes.size }
     end
 
     def downvote
     	@event = Event.find(params[:id] )
     	@event.downvote_by current_user
-      render json: {likes: @event.get_upvotes.size,dislikes: @event.get_downvotes.size}
+      render json: { likes: @event.get_upvotes.size, dislikes: @event.get_downvotes.size }
     end
 
     def activate

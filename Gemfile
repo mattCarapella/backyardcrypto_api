@@ -27,6 +27,11 @@ group :development do
   gem 'rb-readline'
 end
 
+group :test do 
+	gem 'shoulda-matchers', '~> 4.0', '>= 4.0.1', require: false
+	gem 'database_cleaner', '~> 1.7'
+end
+
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby] 				# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 
 gem 'devise', '~> 4.6', '>= 4.6.2'
@@ -40,3 +45,4 @@ gem 'acts_as_votable', '~> 0.11.1'
 gem 'friendly_id', '~> 5.2', '>= 5.2.5'
 gem 'rack-attack', '~> 6.0'
 gem 'cancancan', '~> 3.0', '>= 3.0.1'
+gem 'bullet', '~> 6.0'

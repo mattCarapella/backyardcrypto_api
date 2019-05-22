@@ -20,35 +20,32 @@
           # Archive for open topic questions (.../coins/bitcoin/questions?id=29&ques_num=5)
           num = params[:ques_num]
           question = Question.find(params[:id])
-          topic = question.open_topic
+          topic = question.open_topic if question
           @pending  = @coin.questions.open_topic.pending.where("open_topic=?", topic)
-          @accepted = @coin.questions.open_topic.active.where("open_topic=?", topic)
+          @accepted = @coin.questions.open_topic.active.where("open_topic=?",  topic)
           @rejected = @coin.questions.open_topic.inactive.where("open_topic=?", topic)
         else
-          # Archive for specific questions (.../coins/bitcoin/questions?ques_num=2)
-          ques_param = params[:ques_num]  
-          p ques_param 
-          p "*******: " + params[:coin_id]
-          if ques_param == 'overview'
-            @pending   = @coin.questions.overview.pending
-            @accepted  = @coin.questions.overview.active
-            @rejected  = @coin.questions.overview.inactive
-          elsif ques_param == 'history'
-            @pending   = @coin.questions.history.pending
-            @accepted  = @coin.questions.history.active
-            @rejected  = @coin.questions.history.inactive
-          elsif ques_param == 'goverence_model'
-            @pending   = @coin.questions.goverence_model.pending
-            @accepted  = @coin.questions.goverence_model.active
-            @rejected  = @coin.questions.goverence_model.inactive
-          elsif ques_param == 'business_model'
-            @pending   = @coin.questions.business_model.pending
-            @accepted  = @coin.questions.business_model.active
-            @rejected  = @coin.questions.business_model.inactive
-          elsif ques_param == 'use_cases'
-            @pending   = @coin.questions.use_cases.pending
-            @accepted  = @coin.questions.use_cases.active
-            @rejected  = @coin.questions.use_cases.inactive
+          # Archive for specific questions (.../coins/bitcoin/questions?ques_num=2) 
+          if params[:ques_num] == 'overview'
+            @pending  = @coin.questions.overview.pending
+            @accepted = @coin.questions.overview.active
+            @rejected = @coin.questions.overview.inactive
+          elsif params[:ques_num] == 'history'
+            @pending  = @coin.questions.history.pending
+            @accepted = @coin.questions.history.active
+            @rejected = @coin.questions.history.inactive
+          elsif params[:ques_num] == 'goverence_model'
+            @pending  = @coin.questions.goverence_model.pending
+            @accepted = @coin.questions.goverence_model.active
+            @rejected = @coin.questions.goverence_model.inactive
+          elsif params[:ques_num] == 'business_model'
+            @pending  = @coin.questions.business_model.pending
+            @accepted = @coin.questions.business_model.active
+            @rejected = @coin.questions.business_model.inactive
+          elsif params[:ques_num] == 'use_cases'
+            @pending  = @coin.questions.use_cases.pending
+            @accepted = @coin.questions.use_cases.active
+            @rejected = @coin.questions.use_cases.inactive
           end 
         end
         if params[:ques_num] == '5' 
@@ -80,20 +77,6 @@
       @question.send('downvotes=', @question.get_downvotes.size)
     end
 
-  #  def discussion
-  #  	@question = Question.find(params[:id])
-  #  	if params[:comment]
-  #  		@comments = @question.comments.where(id: params[:comment])
-  #  	else
-  #   	@comments = @question.comments.where(parent_id: nil).paginate(:page => params[:page], :per_page => 10)
-  #   end
-  #      @comments.each {
-  #          |c|
-  #          c.send('upvotes=', c.get_upvotes.size)
-  #          c.send('downvotes=', c.get_downvotes.size)
-  #      }
-  #  end
-
     def new
       #@question = current_user.questions.build
       @question = Question.new
@@ -103,8 +86,8 @@
       #@question = current_user.questions.build(question_params)
       @question = Question.new(question_params)
       @question.coin = @coin
-      if @question.save # && verify_recaptcha(model: @question)
-        # Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", notifiable: @question)
+      if @question.save # && verify_recaptcha(model: @question)   
+        # Notification.create(recipient: @coin.moderator, actor: current_user, action: "submitted", notifiable: @question) if @coin.moderator
         render json: @question, status: :created
       else
         render json: @question.errors, status: :unprocessable_entity
@@ -141,22 +124,12 @@
    #    end
    #  end
 
-   #  def pending
-   #    sort_by = 'created_at'
-   #    @already_included = Question.where("coin_id=? AND ques_num=? AND accepted=?", @coin.id, params[:ques_num], true).map(&:term)
-   #    @inactive = Question.where('coin_id=? AND ques_num=? and rejected=?', @coin.id, params[:ques_num], true).select { |a| @already_included.exclude? (a.term) }
-   #    @inactive_count = @inactive.count
-   #    @pending = Question.where('coin_id=? AND ques_num=? AND pending=?', @coin.id, params[:ques_num], true).select { |a| @already_included.exclude? (a.term) }
-   #    @pending_count = @pending.count
-   #    logger.info(@questions.to_json)
-   #  end
-
    #  def pending_topics
-  	# 	@question
+   # 	@question
    #    authorize! :update, @question
-  	# 	@already_included_topics = Question.where("ques_num=? AND accepted=? AND coin_id=?", 5, true, @coin.id).map(&:open_topic)
-  	# 	@pending = Question.where("ques_num=? AND pending=? AND coin_id=?", 5, true, @coin.id).select { |a| @already_included_topics.exclude? (a.open_topic) }
-  	# 	logger.info(@questions.to_json)
+   # 	  @already_included_topics = Question.where("ques_num=? AND accepted=? AND coin_id=?", 5, true, @coin.id).map(&:open_topic)
+   # 	  @pending = Question.where("ques_num=? AND pending=? AND coin_id=?", 5, true, @coin.id).select { |a| @already_included_topics.exclude? (a.open_topic) }
+   # 	  logger.info(@questions.to_json)
    #  end
 
     def challenge
@@ -211,7 +184,19 @@
     #   Notification.create(recipient: @question.coin.moderator, actor: current_user, action: "flagged", notifiable: @question)
     # end
 
-    
+    # def discussion
+    #   @question = Question.find(params[:id])
+    #   if params[:comment]
+    #     @comments = @question.comments.where(id: params[:comment])
+    #   else
+    #     @comments = @question.comments.where(parent_id: nil).paginate(:page => params[:page], :per_page => 10)
+    #   end
+    #   @comments.each do |c|
+    #        c.send('upvotes=', c.get_upvotes.size)
+    #        c.send('downvotes=', c.get_downvotes.size)
+    #   end
+    # end
+
     private
 
       def question_params
