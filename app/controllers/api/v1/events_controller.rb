@@ -1,4 +1,4 @@
-module Api::V1 
+ module Api::V1 
   class EventsController < ApiController
     before_action :set_coin
     before_action :set_event, only: [:show, :update, :destroy]
