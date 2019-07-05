@@ -2,8 +2,8 @@ module Api::V1
   class TermsController < ApiController  
     before_action :set_term, except: [:index, :create, :new]
     before_action :set_coin 
-    #before_action :authenticate_user!#, except: [:index]
-    #load_and_authorize_resource
+    before_action :authenticate_user!, except: [:show, :index]
+    load_and_authorize_resource
 
     def index
       if params[:term].blank?   
@@ -46,10 +46,10 @@ module Api::V1
     end
 
     def show
-      @upvotes = @term.get_upvotes.size
-      @downvotes = @term.get_downvotes.size
-      @total_votes = Float(@upvotes + @downvotes)
-      @approval_rating = (@upvotes/@total_votes*100).round(2)
+      @upvotes          = @term.get_upvotes.size
+      @downvotes        = @term.get_downvotes.size
+      @total_votes      = Float(@upvotes + @downvotes)
+      @approval_rating  = (@upvotes/@total_votes*100).round(2)
     end
 
     def new
@@ -95,8 +95,8 @@ module Api::V1
     def activate
       # authorize! :update, @term
       if @term.valid? :activate 
-        @term.active_status = 1
-        @term.save
+        @term.active_status ="active"
+        @term.save!
         render json: @term, status: :ok  
       else 
         render json: @term.errors, status: :unprocessable_entity  
@@ -105,7 +105,7 @@ module Api::V1
 
     def deactivate
       # authorize! :update, @term
-      @term.active_status = 2
+      @term.active_status = "inactive"
       @term.save!
     end
 

@@ -2,10 +2,10 @@ module Api::V1
   class CoinsController < ApiController
     require "csv" 
 
-    #load_and_authorize_resource param_method: :question_params    # CANCANCAN
-    #load_and_authorize_resource param_method: :event_params
+    load_and_authorize_resource param_method: :question_params    # CANCANCAN
+    load_and_authorize_resource param_method: :event_params
     before_action :set_coin, only: [:show, :edit, :update]
-    #before_action :authenticate_user!, except: [:index, :show]
+    before_action :authenticate_user!, except: [:index, :show]
     before_action :get_pending_term_and_kp_counts, only: [:show]
     before_action :get_submission_count, only: :show
     # before_action :get_localized_event_datetime, only: :show
@@ -49,28 +49,22 @@ module Api::V1
       end
        
       # ------ Links ------- 
-      @coin_exchanges = @coin.links.exchange.active 
-      @other_links    = @coin.links.otherlink.active
+      @coin_exchanges         = @coin.links.exchange.active 
+      @other_links            = @coin.links.otherlink.active
 
       # ------ Questions -------
-      @accepted_questions = @coin.questions.active          
-      # @general_accepted = [ @coin.questions.overview.active.first, 
-      #                       @coin.questions.history.active.first,
-      #                       @coin.questions.goverence_model.active.first,
-      #                       @coin.questions.business_model.active.first,
-      #                       @coin.questions.use_cases.active.first
-      #                     ]
-      @open_topic_accepted = @coin.questions.open_topic.active
+      @accepted_questions     = @coin.questions.active          
+      @open_topic_accepted    = @coin.questions.open_topic.active
 
       # ------ Key Players / Terms ------
-      @accepted_terms                 = @coin.terms.active
-      @accepted_key_players           = @coin.key_players.active
+      @accepted_terms         = @coin.terms.active
+      @accepted_key_players   = @coin.key_players.active
       
       # ------ Posts -------
-      @community_posts                = @coin.posts.first(10)
+      @community_posts        = @coin.posts.first(10)
   
       if current_user
-        @favorite_coins               = @coin.favorites.where("user_id=?", current_user.id)
+        @favorite_coins       = @coin.favorites.where("user_id=?", current_user.id)
       end 
  
       get_submitted_picture if !@coin.picture
@@ -175,11 +169,11 @@ module Api::V1
                 else
                   byc_coin = @coin
                 end
-                byc_coin.price        = cryptocompare_coin[1]['USD']['PRICE']
-                byc_coin.market_cap   = cryptocompare_coin[1]['USD']['MKTCAP']
-                byc_coin.supply_24    = cryptocompare_coin[1]['USD']['SUPPLY']
-                byc_coin.volume_24    = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']
-                byc_coin.change_24    = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']   
+                byc_coin.price      = cryptocompare_coin[1]['USD']['PRICE']
+                byc_coin.market_cap = cryptocompare_coin[1]['USD']['MKTCAP']
+                byc_coin.supply_24  = cryptocompare_coin[1]['USD']['SUPPLY']
+                byc_coin.volume_24  = cryptocompare_coin[1]['USD']['VOLUME24HOURTO']
+                byc_coin.change_24  = cryptocompare_coin[1]['USD']['CHANGEPCT24HOUR']   
               end       
             end     
           end
@@ -213,18 +207,18 @@ module Api::V1
       end
 
       def get_pending_term_and_kp_counts
-        @pending_kp   = @coin.key_players.pending
-        @pending_term = @coin.terms.pending
+        @pending_kp               = @coin.key_players.pending
+        @pending_term             = @coin.terms.pending
         if @pending_kp.any?
-          @accepted_kp_titles = @coin.key_players.active.map { |t| t[:title] }
-          @pending_kp = @pending_kp.reject { |t| @accepted_kp_titles.include?(t[:title]) }
+          @accepted_kp_titles     = @coin.key_players.active.map { |t| t[:title] }
+          @pending_kp             = @pending_kp.reject { |t| @accepted_kp_titles.include?(t[:title]) }
         end
         if @pending_term.any?
-          @accepted_term_titles = @coin.terms.active.map { |t| t[:title] }
-          @pending_term = @pending_term.reject { |t| @accepted_term_titles.include?(t[:title]) }
+          @accepted_term_titles   = @coin.terms.active.map { |t| t[:title] }
+          @pending_term           = @pending_term.reject { |t| @accepted_term_titles.include?(t[:title]) }
         end
-        @new_pending_terms_count = @pending_term.size
-        @new_pending_kps_count = @pending_kp.size
+        @new_pending_terms_count  = @pending_term.size
+        @new_pending_kps_count    = @pending_kp.size
       end
 
   end

@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         end	
 
         resources :key_players do
+          resources :citations
           member do
             get :activate
             get :deactivate
@@ -58,7 +59,7 @@ Rails.application.routes.draw do
         end
 
         resources :questions do
-          # resources :citations
+          resources :citations
           resources :flags
           resources :comments, module: :questions
           # resources :question_images do
@@ -93,6 +94,7 @@ Rails.application.routes.draw do
         end
     		
     		resources :terms do
+          resources :citations
           member do
             get :activate
             get :deactivate

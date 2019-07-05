@@ -4,7 +4,7 @@ module Devise
 
 			def authenticate!
 				token = get_token
-				p "**** TOKEN: " + token 
+				p "**** TOKEN: " + token if token
 				return fail(:invalid) unless token.present? && token != "null"
 				payload = WebToken.decode(token)
 

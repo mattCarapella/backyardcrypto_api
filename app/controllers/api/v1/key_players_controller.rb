@@ -2,8 +2,8 @@ module Api::V1
   class KeyPlayersController < ApiController
     before_action :set_coin
     before_action :set_key_player, except: [:index, :new, :create]
-    #before_action :authenticate_user!, except: [:show, :index]
-    #load_and_authorize_resource
+    before_action :authenticate_user!, except: [:show, :index]
+    load_and_authorize_resource
 
     def index
       if params[:key_player].blank?  
@@ -94,7 +94,7 @@ module Api::V1
     def activate
       # authorize! :update, @key_player
       if @key_player.valid? :activate # validates that there is only 1 accepted answer per KeyPlayer
-        @key_player.active_status = 1
+        @key_player.active_status = "active"
         @key_player.save!
         render json: @key_player, status: :ok
       else 
@@ -104,8 +104,8 @@ module Api::V1
 
     def deactivate
       # authorize! :update, @key_player
-      unless @key_player.active_status = 2
-        @key_player.active_status = 2
+      unless @key_player.active_status = "inactive"
+        @key_player.active_status = "inactive"
         @key_player.save!
       end
     end

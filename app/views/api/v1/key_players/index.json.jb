@@ -1,4 +1,5 @@
 json = {
+	current_user: current_user,
 	path: @path,
 	accepted_kp: @accepted_kp,
 	pending_kp:  @pending_kp,
